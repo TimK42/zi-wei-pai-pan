@@ -127,18 +127,18 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
       <label>出生時間</label>
       <select class="form-select form-select-sm" id="birthHour">
       <option value="0">00:00-01:00 子(早子)</option>
-      <option value="2" selected>01:00-03:00 丑</option>
-      <option value="4">03:00-05:00 寅</option>
-      <option value="6">05:00-07:00 卯</option>
-      <option value="8">07:00-09:00 辰</option>
-      <option value="10">09:00-11:00 巳</option>
-      <option value="12">11:00-13:00 午</option>
-      <option value="14">13:00-15:00 未</option>
-      <option value="16">15:00-17:00 申</option>
-      <option value="18">17:00-19:00 酉</option>
-      <option value="20">19:00-21:00 戌</option>
-      <option value="22">21:00-23:00 亥</option>
-      <option value="23">23:00-00:00 子(夜子)</option>
+      <option value="1" selected>01:00-03:00 丑</option>
+      <option value="2">03:00-05:00 寅</option>
+      <option value="3">05:00-07:00 卯</option>
+      <option value="4">07:00-09:00 辰</option>
+      <option value="5">09:00-11:00 巳</option>
+      <option value="6">11:00-13:00 午</option>
+      <option value="7">13:00-15:00 未</option>
+      <option value="8">15:00-17:00 申</option>
+      <option value="9">17:00-19:00 酉</option>
+      <option value="10">19:00-21:00 戌</option>
+      <option value="11">21:00-23:00 亥</option>
+      <option value="12">23:00-00:00 子(夜子)</option>
       </select>
     </div>
     <div class="field-sm" style="padding-top:20px">
@@ -153,18 +153,18 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
   <span class="time-input">
     <select id="targetHour" style="width:auto">
       <option value="0">00:00 子(早子)</option>
-      <option value="2">01:00 丑</option>
-      <option value="4">03:00 寅</option>
-      <option value="6">05:00 卯</option>
-      <option value="8">07:00 辰</option>
-      <option value="10">09:00 巳</option>
-      <option value="12">11:00 午</option>
-      <option value="14">13:00 未</option>
-      <option value="16">15:00 申</option>
-      <option value="18">17:00 酉</option>
-      <option value="20">19:00 戌</option>
-      <option value="22">21:00 亥</option>
-      <option value="23">23:00 子(夜子)</option>
+      <option value="1">01:00 丑</option>
+      <option value="2">03:00 寅</option>
+      <option value="3">05:00 卯</option>
+      <option value="4">07:00 辰</option>
+      <option value="5">09:00 巳</option>
+      <option value="6">11:00 午</option>
+      <option value="7">13:00 未</option>
+      <option value="8">15:00 申</option>
+      <option value="9">17:00 酉</option>
+      <option value="10">19:00 戌</option>
+      <option value="11">21:00 亥</option>
+      <option value="12">23:00 子(夜子)</option>
     </select>
     <span class="time-display" id="targetTimeDisplay"></span>
   </span>
@@ -492,7 +492,7 @@ function setupToggles() {
 
 function updateTimeDisplay() {
   const h = parseInt(document.getElementById('targetHour').value);
-  const labels = {'0':'子(早子)','2':'丑','4':'寅','6':'卯','8':'辰','10':'巳','12':'午','14':'未','16':'申','18':'酉','20':'戌','22':'亥','23':'子(夜子)'};
+  const labels = {'0':'子(早子)','1':'丑','2':'寅','3':'卯','4':'辰','5':'巳','6':'午','7':'未','8':'申','9':'酉','10':'戌','11':'亥','12':'子(夜子)'};
   const display = document.getElementById('targetTimeDisplay');
   if (display && labels[h]) display.textContent = '(' + labels[h] + '時)';
 }
@@ -550,12 +550,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const now = new Date();
   const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   document.getElementById('targetDate').value = todayStr;
-  // Snap current hour to 時辰-aligned dropdown values
-  let snapHour = now.getHours();
-  if (snapHour === 0) snapHour = 0;
-  else if (snapHour === 23) snapHour = 23;
-  else if (snapHour % 2 === 1) snapHour = snapHour - 1; // odd → even
-  document.getElementById('targetHour').value = snapHour;
+  // Snap current hour to 時辰 index (0-12)
+  const h24 = now.getHours();
+  const snapIndex = h24 === 0 ? 0 : h24 === 23 ? 12 : Math.floor((h24 + 1) / 2);
+  document.getElementById('targetHour').value = snapIndex;
   updateTimeDisplay();
 
   calculate();
