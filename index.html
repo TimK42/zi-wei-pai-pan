@@ -520,8 +520,9 @@ function runPrediction(force) {
   if (!astrolabe) return;
   const targetDate = document.getElementById('targetDate').value;
   if (!targetDate) return;
-  const targetHour = document.getElementById('targetHour').value.padStart(2,'0');
-  updateHoroscope(targetDate + ' ' + targetHour + ':00');
+  const branchIdx = parseInt(document.getElementById('targetHour').value);
+  const startHour = branchIdx === 0 ? 0 : branchIdx === 12 ? 23 : branchIdx * 2 - 1;
+  updateHoroscope(targetDate + ' ' + String(startHour).padStart(2,'0') + ':00');
   // Re-apply toggle states
   HORO_KEYS.forEach(hk => {
     const cb = document.getElementById(hk.id);
