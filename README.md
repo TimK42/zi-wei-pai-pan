@@ -47,14 +47,20 @@ MIT 開源 JavaScript 庫。
 ```js
 import { astro } from 'iztro';
 
-// 取得命盤
-const astrolabe = astro.bySolar('1990-6-15', 2, '男', true, 'zh-TW');
+// 取得命盤 — hour 為時辰索引 (0=早子, 1=丑, ..., 12=夜子)
+const astrolabe = astro.bySolar('1990-6-15', 6, '男', true, 'zh-TW');
 
-// 計算運限
+// 計算運限 — hour 為實際 24h 小時
 const horoscope = astrolabe.horoscope('2026-5-22 18:00');
 // → { decadal, age, yearly, monthly, daily, hourly }
 // 各層：{ index, name, heavenlyStem, earthlyBranch, palaceNames, mutagen }
 ```
+
+> ⚠️ **注意**：`bySolar()` 的 `hour` 參數是**時辰索引 (0~12)**，不是起始小時！
+> 對照：(0=00:00~00:59 早子, 1=01:00~02:59 丑, 2=03:00~04:59 寅, 3=05:00~06:59 卯,
+> 4=07:00~08:59 辰, 5=09:00~10:59 巳, 6=11:00~12:59 午, 7=13:00~14:59 未,
+> 8=15:00~16:59 申, 9=17:00~18:59 酉, 10=19:00~20:59 戌, 11=21:00~22:59 亥,
+> 12=23:00~23:59 夜子)
 
 ### 前端
 - **單一 HTML 檔案** — CSS + JS 全部在同一頁

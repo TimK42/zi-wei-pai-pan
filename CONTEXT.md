@@ -57,4 +57,9 @@
 
 ---
 
+### 時辰索引 / Hour Index
+iztro `bySolar()` 的 `hour` 參數使用**時辰索引 (0~12)**，非起始小時。
+- 0=早子(00:00~00:59), 1=丑, 2=寅, 3=卯, 4=辰, 5=巳, 6=午,
+  7=未, 8=申, 9=酉, 10=戌, 11=亥, 12=夜子(23:00~23:59)
+
 *This file was updated during the grill-with-docs session.*
