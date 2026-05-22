@@ -394,11 +394,10 @@ function updateHoroscope(targetDateStr) {
   HORO_KEYS.forEach(hk => {
     if (hk.key === 'decadal') return; // already handled above
 
-    // 小限: show age ranges for ALL palaces
+    // 小限: show age list for ALL palaces (12-year cycle)
     if (hk.key === 'age') {
       const ageScope = horoscopeResult.age;
       if (!ageScope) return;
-      const currAge = ageScope.nominalAge || 0;
       astrolabe.palaces.forEach((palace, idx) => {
         if (!palace.ages || palace.ages.length === 0) return;
         const branchIdx = BRANCH_TO_INDEX[palace.earthlyBranch];
@@ -408,17 +407,12 @@ function updateHoroscope(targetDateStr) {
         const infoEl = cell.querySelector('.horo-info.xiaoxian');
         if (!infoEl) return;
 
-        // Build age range from the ages array
-        const ages = palace.ages;
-        const ageStart = ages[0];
-        const ageEnd = ages[ages.length - 1];
+        // Format ages as comma-separated list, capped at ages ≤ 110
+        const displayAges = palace.ages.filter(a => a <= 110).join(', ');
         let content = '<span class="horo-label">小限</span> ';
         const isCurrent = idx === ageScope.index;
-        if (isCurrent) {
-          content += '<span class="horo-value" style="font-weight:700">' + ageStart + '-' + ageEnd + '歲</span>';
-        } else {
-          content += '<span class="horo-value">' + ageStart + '-' + ageEnd + '歲</span>';
-        }
+        const valueStyle = isCurrent ? 'font-weight:700' : '';
+        content += '<span class="horo-value" style="' + valueStyle + '">' + displayAges + '歲</span>';
         infoEl.innerHTML = content;
       });
       return;
