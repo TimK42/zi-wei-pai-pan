@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紫微斗數排盤</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/iztro@2.4.7/dist/iztro.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f0eb;color:#333;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif;padding:16px;min-height:100vh}
+.container{max-width:820px;margin:0 auto}
+header{text-align:center;padding:16px 0 8px}
+header h1{font-size:1.4rem;font-weight:700;color:#4a6fa5;margin-bottom:4px}
+header p{font-size:.85rem;color:#888}
+
+/* Form Card */
+.form-card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.08);margin-bottom:16px}
+.form-card label{font-weight:500;font-size:.85rem;color:#555;margin-bottom:2px}
+.form-card .form-select,.form-card .form-control{font-size:.85rem}
+.form-row{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.form-row .field{flex:1;min-width:100px}
+.form-row .field-sm{flex:0 0 auto}
+
+/* Chart Grid */
+.chart-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:3px;margin-bottom:16px}
+.palace-cell{background:#fff;border-radius:6px;padding:6px 4px;min-height:140px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:.72rem;line-height:1.3;position:relative;overflow:hidden;transition:box-shadow .2s}
+.palace-cell .palace-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;padding-bottom:3px;border-bottom:2px solid #e8e0d4}
+.palace-cell .palace-name{font-weight:700;font-size:.8rem;color:#4a6fa5}
+.palace-cell .palace-branch{font-size:.65rem;color:#aaa}
+.star{display:inline-block;margin-right:1px;font-size:.7rem}
+.star.major{font-weight:600;color:#222}
+.star.minor{color:#555}
+.star.adjunct{color:#777;font-size:.65rem}
+.star .brightness{color:#c8a050;font-size:.6rem}
+.star .transformed{font-weight:700;font-size:.6rem;display:inline}
+.transformed.禄{color:#2a7d2a}
+.transformed.權{color:#2a5da8}
+.transformed.科{color:#8a4a9a}
+.transformed.忌{color:#c33}
+
+/* Horoscope overlay */
+.horo-info{font-size:.62rem;margin-top:4px;padding-top:3px;border-top:1px dashed #ddd;display:none;color:#666}
+.horo-info.show{display:block}
+.horo-info .horo-label{color:#4a6fa5;font-weight:600}
+.horo-info .horo-value{color:#a0522d}
+
+/* Center cells */
+.center-cell{background:#fff;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:.72rem;color:#888;line-height:1.5;text-align:center;padding:4px}
+.center-cell .main-info{color:#4a6fa5;font-weight:600;font-size:.9rem}
+.center-cell .sub-info{font-size:.68rem}
+.center-cell .year-col{font-size:.85rem;font-weight:500;color:#4a6fa5}
+
+/* Prediction Bar */
+.prediction-bar{background:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 1px 6px rgba(0,0,0,.08);margin-bottom:16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.prediction-bar .time-label{font-weight:600;font-size:.85rem;color:#555;white-space:nowrap}
+.prediction-bar .time-input{flex:0 0 auto}
+.prediction-bar .time-input select{font-size:.78rem;padding:2px 6px;border:1px solid #ddd;border-radius:6px;background:#fff}
+.prediction-bar .time-display{font-size:.78rem;color:#a0522d;font-weight:500;white-space:nowrap}
+.horo-checkboxes{display:flex;flex-wrap:wrap;gap:4px;margin-left:4px}
+.horo-check{display:none}
+.horo-label-btn{display:inline-block;padding:4px 10px;font-size:.78rem;border:1px solid #d0c8bc;border-radius:16px;background:#f8f5f0;color:#666;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap}
+.horo-label-btn:hover{background:#eee8dc;border-color:#b8a89a}
+.horo-check:checked+.horo-label-btn{background:#4a6fa5;color:#fff;border-color:#3a5f95}
+
+/* Alert */
+.alert-msg{text-align:center;padding:12px;color:#c33;font-size:.85rem;display:none}
+.alert-msg.show{display:block}
+
+/* Footer */
+footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
+
+@media(max-width:600px){
+  .palace-cell{min-height:110px;font-size:.65rem;padding:4px 3px}
+  .palace-cell .palace-name{font-size:.7rem}
+  .star{font-size:.62rem}
+  .horo-info{font-size:.55rem}
+  .prediction-bar{flex-direction:column;align-items:stretch}
+  .prediction-bar .time-input{flex:1}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <h1><i class="bi bi-moon-stars"></i> 紫微斗數排盤</h1>
+  <p>基於 iztro 引擎 · 純前端離線運算</p>
+</header>
+
+<div class="form-card">
+  <div class="form-row">
+    <div class="field">
+      <label>性別</label>
+      <div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="gender" id="genderM" value="1" checked>
+          <label class="form-check-label" for="genderM">男</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="gender" id="genderF" value="0">
+          <label class="form-check-label" for="genderF">女</label>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>出生日期</label>
+      <input type="date" class="form-control form-control-sm" id="birthDate" value="1990-06-15">
+    </div>
+    <div class="field">
+      <label>出生時間</label>
+      <select class="form-select form-select-sm" id="birthHour">
+        <option value="0">00:00-01:00 早子</option>
+        <option value="1">01:00-03:00 丑</option>
+        <option value="2" selected>02:00-03:00 丑</option>
+        <option value="3">03:00-05:00 寅</option>
+        <option value="4">04:00-05:00 寅</option>
+        <option value="5">05:00-07:00 卯</option>
+        <option value="6">06:00-07:00 卯</option>
+        <option value="7">07:00-09:00 辰</option>
+        <option value="8">08:00-09:00 辰</option>
+        <option value="9">09:00-11:00 巳</option>
+        <option value="10">10:00-11:00 巳</option>
+        <option value="11">11:00-13:00 午</option>
+        <option value="12">12:00-13:00 午</option>
+        <option value="13">13:00-15:00 未</option>
+        <option value="14">14:00-15:00 未</option>
+        <option value="15">15:00-17:00 申</option>
+        <option value="16">16:00-17:00 申</option>
+        <option value="17">17:00-19:00 酉</option>
+        <option value="18">18:00-19:00 酉</option>
+        <option value="19">19:00-21:00 戌</option>
+        <option value="20">20:00-21:00 戌</option>
+        <option value="21">21:00-23:00 亥</option>
+        <option value="22">22:00-23:00 亥</option>
+        <option value="23">23:00-00:00 夜子</option>
+      </select>
+    </div>
+    <div class="field-sm" style="padding-top:20px">
+      <button class="btn btn-primary btn-sm" id="calcBtn"><i class="bi bi-calculator"></i> 排盤</button>
+    </div>
+  </div>
+</div>
+
+<div class="alert-msg" id="alertMsg"></div>
+
+<div class="chart-grid" id="chartGrid"></div>
+
+<div class="prediction-bar">
+  <span class="time-label"><i class="bi bi-clock"></i> 預測目標時間</span>
+  <span class="time-input">
+    <input type="date" id="targetDate" class="form-control form-control-sm d-inline-block" style="width:auto;display:inline!important">
+  </span>
+  <span class="time-input">
+    <select id="targetHour" style="width:auto">
+      <option value="0">00:00 早子</option>
+      <option value="1">01:00 丑</option>
+      <option value="2">02:00 丑</option>
+      <option value="3">03:00 寅</option>
+      <option value="4">04:00 寅</option>
+      <option value="5">05:00 卯</option>
+      <option value="6">06:00 卯</option>
+      <option value="7">07:00 辰</option>
+      <option value="8">08:00 辰</option>
+      <option value="9">09:00 巳</option>
+      <option value="10">10:00 巳</option>
+      <option value="11">11:00 午</option>
+      <option value="12">12:00 午</option>
+      <option value="13">13:00 未</option>
+      <option value="14">14:00 未</option>
+      <option value="15">15:00 申</option>
+      <option value="16">16:00 申</option>
+      <option value="17">17:00 酉</option>
+      <option value="18">18:00 酉</option>
+      <option value="19">19:00 戌</option>
+      <option value="20">20:00 戌</option>
+      <option value="21">21:00 亥</option>
+      <option value="22">22:00 亥</option>
+      <option value="23">23:00 夜子</option>
+    </select>
+    <span class="time-display" id="targetTimeDisplay"></span>
+  </span>
+  <span class="horo-checkboxes">
+    <input type="checkbox" class="horo-check" id="chkDaxian">
+    <label class="horo-label-btn" for="chkDaxian">大限</label>
+    <input type="checkbox" class="horo-check" id="chkXiaoxian">
+    <label class="horo-label-btn" for="chkXiaoxian">小限</label>
+    <input type="checkbox" class="horo-check" id="chkFlowYear">
+    <label class="horo-label-btn" for="chkFlowYear">流年</label>
+    <input type="checkbox" class="horo-check" id="chkFlowMonth">
+    <label class="horo-label-btn" for="chkFlowMonth">流月</label>
+    <input type="checkbox" class="horo-check" id="chkFlowDay">
+    <label class="horo-label-btn" for="chkFlowDay">流日</label>
+    <input type="checkbox" class="horo-check" id="chkFlowHour">
+    <label class="horo-label-btn" for="chkFlowHour">流時</label>
+    <input type="checkbox" class="horo-check" id="chkZihua">
+    <label class="horo-label-btn" for="chkZihua">四化</label>
+  </span>
+</div>
+
+<footer>
+  計算引擎 <a href="https://github.com/SylarLong/iztro" target="_blank" rel="noopener">iztro</a> ·
+  純前端離線運算，不傳送任何資料
+</footer>
+
+</div>
+
+<script>
+// ─── Constants ───
+const BRANCH_TO_INDEX = {'子':0,'丑':1,'寅':2,'卯':3,'辰':4,'巳':5,'午':6,'未':7,'申':8,'酉':9,'戌':10,'亥':11};
+// Branch index → grid (row, col) in 4×4 chart
+const BRANCH_GRID = [
+  [3,2],[3,1],[3,0],  // 子丑寅
+  [2,0],[1,0],[0,0],  // 卯辰巳
+  [0,1],[0,2],[0,3],  // 午未申
+  [1,3],[2,3],[3,3]   // 酉戌亥
+];
+const MUTAGEN_MAP = { '祿':'禄','權':'權','科':'科','忌':'忌' };
+const HORO_KEYS = [
+  { key: 'decadal', id: 'chkDaxian', cls: 'daxian', label: '大限' },
+  { key: 'age',     id: 'chkXiaoxian', cls: 'xiaoxian', label: '小限' },
+  { key: 'yearly',  id: 'chkFlowYear', cls: 'flowyear', label: '流年' },
+  { key: 'monthly', id: 'chkFlowMonth', cls: 'flowmonth', label: '流月' },
+  { key: 'daily',   id: 'chkFlowDay', cls: 'flowday', label: '流日' },
+  { key: 'hourly',  id: 'chkFlowHour', cls: 'flowhour', label: '流時' },
+];
+
+// ─── Globals ───
+let astrolabe = null;
+let horoscopeResult = null;
+
+// ─── Build Grid ───
+function buildGrid() {
+  const grid = document.getElementById('chartGrid');
+  grid.innerHTML = '';
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      if ((r===1||r===2) && (c===1||c===2)) {
+        const center = document.createElement('div');
+        center.className = 'center-cell';
+        center.id = 'center_'+r+'_'+c;
+        center.innerHTML = '—';
+        grid.appendChild(center);
+      } else {
+        // Find branch index for this grid pos
+        let branchIdx = -1;
+        for (let b = 0; b < 12; b++) {
+          if (BRANCH_GRID[b][0] === r && BRANCH_GRID[b][1] === c) {
+            branchIdx = b;
+            break;
+          }
+        }
+        const cell = document.createElement('div');
+        cell.className = 'palace-cell';
+        cell.dataset.branch = branchIdx;
+        cell.innerHTML =
+          '<div class="palace-header"><span class="palace-name"></span><span class="palace-branch"></span></div>' +
+          '<div class="stars-area"></div>' +
+          HORO_KEYS.map(h => '<div class="horo-info '+h.cls+'"></div>').join('');
+        grid.appendChild(cell);
+      }
+    }
+  }
+}
+
+// ─── Find Cell by Branch ───
+function getCell(branchIdx) {
+  return document.querySelector('.palace-cell[data-branch="'+branchIdx+'"]');
+}
+
+// ─── Render Chart ───
+function renderChart(a) {
+  if (!a) return;
+  astrolabe = a;
+
+  // Build palace lookup by earthly branch
+  const palaceByBranch = {};
+  a.palaces.forEach(p => {
+    const idx = BRANCH_TO_INDEX[p.earthlyBranch];
+    if (idx !== undefined) palaceByBranch[idx] = p;
+  });
+
+  // Render each palace cell
+  for (let b = 0; b < 12; b++) {
+    const cell = getCell(b);
+    if (!cell) continue;
+    const p = palaceByBranch[b];
+    if (!p) continue;
+
+    // Header
+    cell.querySelector('.palace-name').textContent = p.name;
+    cell.querySelector('.palace-branch').textContent = p.heavenlyStem + p.earthlyBranch;
+
+    // Stars
+    const sa = cell.querySelector('.stars-area');
+    sa.innerHTML = '';
+    const allStars = [...p.majorStars, ...p.minorStars, ...p.adjectiveStars];
+    allStars.forEach(s => {
+      const span = document.createElement('span');
+      span.className = 'star ' + s.type;
+      span.textContent = s.name;
+      if (s.brightness) {
+        const br = document.createElement('span');
+        br.className = 'brightness';
+        br.textContent = s.brightness;
+        span.appendChild(br);
+      }
+      if (s.mutagen) {
+        const tr = document.createElement('span');
+        tr.className = 'transformed ' + s.mutagen;
+        tr.textContent = s.mutagen;
+        span.appendChild(tr);
+      }
+      sa.appendChild(span);
+      sa.appendChild(document.createTextNode(' '));
+    });
+  }
+
+  // Center cells
+  const c00 = document.getElementById('center_1_1');
+  const c01 = document.getElementById('center_1_2');
+  const c10 = document.getElementById('center_2_1');
+  const c11 = document.getElementById('center_2_2');
+  
+  // Chinese four pillars
+  const pillars = a.chineseDate ? a.chineseDate.split(' ') : [];
+  // rawDates.chineseDate has structure
+  const raw = a.rawDates?.chineseDate;
+  
+  if (c00) {
+    c00.innerHTML = '<span class="main-info">'+ (a.fiveElementsClass||'') +'</span>' +
+      '<span class="sub-info">'+ (a.soul||'') +' · 身('+ a.earthlyBranchOfBodyPalace +')</span>' +
+      '<span class="sub-info" style="font-size:.6rem;color:#aaa">'+ (a.body||'') +'</span>';
+  }
+  if (c01) {
+    const yearPillar = raw?.yearly ? raw.yearly.join('') : pillars[0]||'';
+    const monthPillar = raw?.monthly ? raw.monthly.join('') : pillars[1]||'';
+    c01.innerHTML = '<span class="year-col">'+ yearPillar +' · '+ monthPillar +'</span>' +
+      '<span class="sub-info">年 · 月</span>';
+  }
+  if (c10) {
+    const dayPillar = raw?.daily ? raw.daily.join('') : pillars[2]||'';
+    const hourPillar = raw?.hourly ? raw.hourly.join('') : pillars[3]||'';
+    c10.innerHTML = '<span class="year-col">'+ dayPillar +' · '+ hourPillar +'</span>' +
+      '<span class="sub-info">日 · 時</span>';
+  }
+  if (c11) {
+    c11.innerHTML = '<span class="main-info">'+ (a.lunarDate||'') +'</span>' +
+      '<span class="sub-info">'+ (a.sign||'') +' · '+ (a.zodiac||'') +'</span>';
+  }
+}
+
+// ─── Update Horoscope ───
+function updateHoroscope(targetDateStr) {
+  const horoEls = document.querySelectorAll('.horo-info');
+  horoEls.forEach(el => { el.innerHTML = ''; });
+
+  if (!astrolabe || !targetDateStr) return;
+
+  try {
+    const result = astrolabe.horoscope(targetDateStr);
+    horoscopeResult = result;
+  } catch(e) {
+    console.error('horoscope error:', e);
+    return;
+  }
+
+  HORO_KEYS.forEach(hk => {
+    const scope = horoscopeResult[hk.key];
+    if (!scope || scope.index === undefined || scope.index < 0) return;
+    const palace = astrolabe.palaces[scope.index];
+    if (!palace) return;
+    const branchIdx = BRANCH_TO_INDEX[palace.earthlyBranch];
+    if (branchIdx === undefined) return;
+    const cell = getCell(branchIdx);
+    if (!cell) return;
+    const infoEl = cell.querySelector('.horo-info.' + hk.cls);
+    if (!infoEl) return;
+
+    let content = '<span class="horo-label">' + hk.label + '</span> ';
+    content += '<span class="horo-value">' + (scope.heavenlyStem || '') + (scope.earthlyBranch || '') + '</span>';
+
+    if (hk.key === 'decadal' && palace.decadal && palace.decadal.range) {
+      content += ' <span class="horo-value">' + palace.decadal.range[0] + '-' + palace.decadal.range[1] + '歲</span>';
+    }
+    if (hk.key === 'age' && palace.ages && palace.ages.length > 0) {
+      // Find current age
+      const nomAge = horoscopeResult.age ? horoscopeResult.age.nominalAge : '';
+      if (nomAge) content += ' <span class="horo-value">' + nomAge + '歲</span>';
+    }
+    // Show transformations (四化) for this scope
+    if (scope.mutagen && scope.mutagen.length) {
+      const m = scope.mutagen;
+      let mStr = '';
+      if (Array.isArray(m)) {
+        const names = m.map(x => x.name || x.star || '').filter(Boolean).join(',');
+        if (names) mStr = names;
+      }
+      if (mStr) content += ' <span class="horo-label">四化: </span><span class="horo-value">' + mStr + '</span>';
+    }
+    infoEl.innerHTML = content;
+  });
+}
+
+// ─── Toggles ───
+function setupToggles() {
+  HORO_KEYS.forEach(hk => {
+    const cb = document.getElementById(hk.id);
+    if (!cb) return;
+    cb.addEventListener('change', function() {
+      document.querySelectorAll('.horo-info.' + hk.cls).forEach(el => {
+        el.classList.toggle('show', this.checked);
+      });
+    });
+  });
+  // 四化 toggle: show/hide .transformed
+  const chkZihua = document.getElementById('chkZihua');
+  if (chkZihua) {
+    chkZihua.addEventListener('change', function() {
+      document.querySelectorAll('.transformed').forEach(el => {
+        el.style.display = this.checked ? 'inline' : 'none';
+      });
+    });
+  }
+}
+
+function updateTimeDisplay() {
+  const h = parseInt(document.getElementById('targetHour').value);
+  const labels = ['早子','丑','丑','寅','寅','卯','卯','辰','辰','巳','巳','午','午','未','未','申','申','酉','酉','戌','戌','亥','亥','夜子'];
+  const display = document.getElementById('targetTimeDisplay');
+  if (display && labels[h]) display.textContent = '(' + labels[h] + '時)';
+}
+
+// ─── Calculate ───
+function calculate() {
+  const gender = document.querySelector('input[name="gender"]:checked').value;
+  const birthDate = document.getElementById('birthDate').value;
+  const birthHour = parseInt(document.getElementById('birthHour').value);
+  const alertEl = document.getElementById('alertMsg');
+  alertEl.classList.remove('show');
+  if (!birthDate) { alertEl.textContent = '請選擇出生日期'; alertEl.classList.add('show'); return; }
+  try {
+    const a = iztro.astro.bySolar(birthDate, birthHour, gender === '1' ? '男' : '女', true, 'zh-TW');
+    renderChart(a);
+    runPrediction(true);
+  } catch(e) {
+    console.error(e);
+    alertEl.textContent = '排盤錯誤：'+e.message;
+    alertEl.classList.add('show');
+  }
+}
+
+function runPrediction(force) {
+  if (!astrolabe) return;
+  const targetDate = document.getElementById('targetDate').value;
+  if (!targetDate) return;
+  const targetHour = document.getElementById('targetHour').value.padStart(2,'0');
+  updateHoroscope(targetDate + ' ' + targetHour + ':00');
+  // Re-apply toggle states
+  HORO_KEYS.forEach(hk => {
+    const cb = document.getElementById(hk.id);
+    if (cb && cb.checked) {
+      document.querySelectorAll('.horo-info.'+hk.cls).forEach(el => el.classList.add('show'));
+    }
+  });
+}
+
+// ─── Init ───
+document.addEventListener('DOMContentLoaded', function() {
+  buildGrid();
+  setupToggles();
+
+  document.getElementById('calcBtn').addEventListener('click', calculate);
+  document.getElementById('targetDate').addEventListener('change', function() { runPrediction(); });
+  document.getElementById('targetHour').addEventListener('change', function() { updateTimeDisplay(); runPrediction(false); });
+
+  const now = new Date();
+  const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  document.getElementById('targetDate').value = todayStr;
+  document.getElementById('targetHour').value = now.getHours();
+  updateTimeDisplay();
+
+  calculate();
+});
+</script>
+
+</body>
+</html>
