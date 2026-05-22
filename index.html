@@ -474,6 +474,9 @@ function updateHoroscope(targetDateStr) {
       }
     });
 
+    // Clear ALL existing flow 四化 markers for this flow type (prevents stale markers after recalc)
+    document.querySelectorAll('.flow-mutagen.' + hk.cls).forEach(el => el.remove());
+
     // Add flow 四化 markers to stars
     if (scope.heavenlyStem && scope.mutagen && Array.isArray(scope.mutagen) && scope.mutagen.length) {
       const rules = SELF_TRANSFORM_RULES[scope.heavenlyStem];
