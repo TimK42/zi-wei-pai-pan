@@ -110,3 +110,8 @@ updateHoroscope(targetDate + ' ' + String(startHour).padStart(2,'0') + ':00');
   - 起始宮位：顯示完整「流年 丙午」格式（含 label + value + 四化）
   - 其餘 11 宮：僅顯示角色名稱（起始宮位順時針往後偏移的角色名稱），顏色與對應運限一致
   - 各層有獨立識別色：流年(紫)、流月(青)、流日(橙)、流時(粉紅)
+
+### 運限視覺規則 / Fortune Limit Visual
+- 各層之間無虛線分隔線，行距 margin-top:2px + padding-top:1px
+- 各層僅在 checkbox 勾選時才顯示（`show` class）
+- 大限／小限當限宮粗體標示

@@ -1,6 +1,7 @@
 # UI/UX Requirements — 紫微斗數排盤
 
 > Status: ✅ Implemented (v1.0)
+> Tests: 40 Playwright E2E tests, all passing
 > Reference: myfate.herokuapp.com/ziwei
 
 ---

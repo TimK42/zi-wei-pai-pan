@@ -110,6 +110,26 @@ const horoscope = astrolabe.horoscope('2026-5-23 1:00');
 
 ---
 
+## 測試
+
+使用 **Playwright** 進行端到端測試，涵蓋 UI/UX 需求所有功能。
+
+```bash
+node tests/ziwei.spec.js
+```
+
+目前 40 項測試，全部通過。測試範圍：
+- 出生預設值（1982-11-11 亥時）
+- 12 宮格渲染、宮名、中心區資訊
+- 性別切換、四柱格式
+- 大限／小限／流年／流月／流日／流時全 12 宮切換
+- 運限標籤格式（非命宮僅顯示角色名稱，無「流X」前綴）
+- 各層獨立色系（大限紅、小限綠、流年紫、流月青、流日橙、流時粉紅）
+- 四化／自化 checkboxes toggle
+- 無虛線分隔、行距緊湊
+- 預測時間變更自動重算
+- 主星粗體(≥600)、亮度標記、五行局
+
 ## 檔案結構
 
 ```
@@ -117,6 +137,8 @@ zi-wei-pai-pan/
 ├── index.html                        # 排盤主頁面
 ├── README.md                         # 本文件
 ├── CONTEXT.md                        # 領域術語詞彙表
+├── tests/
+│   └── ziwei.spec.js                 # Playwright 端到端測試（40 tests）
 ├── docs/
 │   └── ui-ux-requirements.md         # UI/UX 需求規格書
 ```
