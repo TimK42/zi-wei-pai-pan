@@ -396,40 +396,140 @@ function startServer() {
   }
 
   // ─── Flow 四化 markers ───
-  await test('流年 四化 markers appear on stars when toggled', async () => {
+  await test('All 4 flow scopes have 四化 markers on stars', async () => {
     await page.click('#chkFlowYear + label');
+    await page.click('#chkFlowMonth + label');
+    await page.click('#chkFlowDay + label');
+    await page.click('#chkFlowHour + label');
+    await page.waitForTimeout(100);
+    const counts = await page.evaluate(() => {
+      return {
+        flowyear:  document.querySelectorAll('.flow-mutagen.flowyear').length,
+        flowmonth: document.querySelectorAll('.flow-mutagen.flowmonth').length,
+        flowday:   document.querySelectorAll('.flow-mutagen.flowday').length,
+        flowhour:  document.querySelectorAll('.flow-mutagen.flowhour').length,
+      };
+    });
+    if (counts.flowyear < 2)  throw new Error(`流年 markers: ${counts.flowyear} < 2`);
+    if (counts.flowmonth < 2) throw new Error(`流月 markers: ${counts.flowmonth} < 2`);
+    if (counts.flowday < 2)   throw new Error(`流日 markers: ${counts.flowday} < 2`);
+    if (counts.flowhour < 2)  throw new Error(`流時 markers: ${counts.flowhour} < 2`);
+  });
+
+  await test('Flow 四化 colors match flow scope (流年=purple)', async () => {
+    const colors = await page.evaluate(() => {
+      function getColor(sel) {
+        const el = document.querySelector(sel);
+        if (!el) return 'not-found';
+        return getComputedStyle(el).color;
+      }
+      return {
+        flowyear:  getColor('.flow-mutagen.flowyear'),
+        flowmonth: getColor('.flow-mutagen.flowmonth'),
+        flowday:   getColor('.flow-mutagen.flowday'),
+        flowhour:  getColor('.flow-mutagen.flowhour'),
+      };
+    });
+    // rgb(142,68,173) = #8e44ad purple
+    if (colors.flowyear  !== 'rgb(142, 68, 173)') throw new Error('流年 color: ' + colors.flowyear);
+    if (colors.flowmonth !== 'rgb(22, 160, 133)') throw new Error('流月 color: ' + colors.flowmonth);
+    if (colors.flowday   !== 'rgb(211, 84, 0)')   throw new Error('流日 color: ' + colors.flowday);
+    if (colors.flowhour  !== 'rgb(212, 51, 112)') throw new Error('流時 color: ' + colors.flowhour);
+  });
+
+  await test('Flow 四化 markers hidden when checkbox off, shown when on', async () => {
+    // Ensure checkbox is ON via evaluate then trigger change
+    await page.evaluate(() => {
+      document.getElementById('chkFlowYear').checked = true;
+      document.getElementById('chkFlowYear').dispatchEvent(new Event('change'));
+    });
+    await page.waitForTimeout(100);
+    const inline = await page.evaluate(() => {
+      const m = document.querySelector('.flow-mutagen.flowyear');
+      return m ? getComputedStyle(m).display : 'no-elem';
+    });
+    if (inline !== 'inline') throw new Error('Expected inline when checked, got ' + inline);
+    // Toggle off via click
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    const none = await page.evaluate(() => {
+      const m = document.querySelector('.flow-mutagen.flowyear');
+      return m ? getComputedStyle(m).display : 'no-elem';
+    });
+    if (none !== 'none') throw new Error('Expected none when unchecked, got ' + none);
+  });
+
+  await test('Flow 四化 independent of 生年四化 toggle', async () => {
+    // Turn off 生年四化
+    await page.click('#chkFlowYear + label'); // ensure on
+    await page.click('#chkZihua + label'); // toggle off
+    await page.waitForTimeout(100);
+    const flow = await page.evaluate(() => {
+      const m = document.querySelector('.flow-mutagen.flowyear');
+      return m ? getComputedStyle(m).display : 'no-elem';
+    });
+    // Turn 生年四化 back on
+    await page.click('#chkZihua + label');
+    await page.waitForTimeout(100);
+    if (flow !== 'inline') throw new Error('Flow 四化 should stay visible when 四化 off, got ' + flow);
+  });
+
+  await test('Flow 四化 correct transformation type on matching star', async () => {
+    // 1982-11-11 亥時 → 壬戌年 → 流年 丙午年 (yearly heavenlyStem=丙)
+    // 丙: 天同祿, 天機權, 文昌科, 廉貞忌
+    const info = await page.evaluate(() => {
+      const cells = document.querySelectorAll('.palace-cell');
+      const result = [];
+      for (const cell of cells) {
+        const stars = cell.querySelectorAll('.star');
+        for (const star of stars) {
+          const flow = star.querySelector('.flow-mutagen.flowyear');
+          if (!flow) continue;
+          result.push({
+            starName: star.textContent.trim().slice(0, 2),
+            flowType: flow.textContent
+          });
+        }
+      }
+      return result;
+    });
+    // 廉貞 should have 忌 (廉貞廟忌)
+    const 廉貞 = info.find(i => i.starName === '廉貞');
+    if (!廉貞 || 廉貞.flowType !== '忌') throw new Error('廉貞 flow 四化 should be 忌, got ' + JSON.stringify(廉貞));
+    // 文昌 should have 科
+    const 文昌 = info.find(i => i.starName === '文昌');
+    if (!文昌 || 文昌.flowType !== '科') throw new Error('文昌 flow 四化 should be 科, got ' + JSON.stringify(文昌));
+  });
+
+  await test('No duplicate flow 四化 after toggle off/on', async () => {
+    await page.click('#chkFlowYear + label'); // off
+    await page.click('#chkFlowYear + label'); // on
     await page.waitForTimeout(100);
     const count = await page.evaluate(() => {
       return document.querySelectorAll('.flow-mutagen.flowyear').length;
     });
-    await page.click('#chkFlowYear + label');
-    await page.waitForTimeout(100);
-    if (count < 2) throw new Error(`Expected ≥2 流年 四化 markers, got ${count}`);
+    if (count < 2 || count > 6) throw new Error(`Unexpected duplicate marker count: ${count}`);
   });
 
-  await test('流月 四化 markers appear on stars when toggled', async () => {
-    await page.click('#chkFlowMonth + label');
-    await page.waitForTimeout(100);
+  await test('Flow 四化 persist after horoscope recalculation', async () => {
+    // Change target hour to trigger recalculation
+    await page.selectOption('#targetHour', '5'); // 寅時
+    await page.waitForTimeout(500);
     const count = await page.evaluate(() => {
-      return document.querySelectorAll('.flow-mutagen.flowmonth').length;
+      return document.querySelectorAll('.flow-mutagen.flowyear').length;
     });
-    await page.click('#chkFlowMonth + label');
-    await page.waitForTimeout(100);
-    if (count < 2) throw new Error(`Expected ≥2 流月 四化 markers, got ${count}`);
-  });
-
-  await test('Flow 四化 markers hidden when flow checkbox off', async () => {
-    // Toggle on
-    await page.click('#chkFlowYear + label');
-    await page.waitForTimeout(100);
-    const visible = await page.evaluate(() => {
-      const m = document.querySelector('.flow-mutagen.flowyear');
-      return m ? getComputedStyle(m).display : 'none';
+    // Reset back to 丑時
+    await page.selectOption('#targetHour', '1');
+    await page.waitForTimeout(500);
+    if (count < 2) throw new Error(`Flow 四化 lost after recalc: ${count}`);
+    // Cleanup: turn off all flow checkboxes so subsequent tests start clean
+    await page.evaluate(() => {
+      ['chkFlowYear','chkFlowMonth','chkFlowDay','chkFlowHour'].forEach(id => {
+        document.getElementById(id).checked = false;
+        document.getElementById(id).dispatchEvent(new Event('change'));
+      });
     });
-    // Toggle off
-    await page.click('#chkFlowYear + label');
     await page.waitForTimeout(100);
-    if (visible !== 'inline') throw new Error('Flow 四化 should be inline when checked: ' + visible);
   });
 
   // ─── No dashed borders ───
