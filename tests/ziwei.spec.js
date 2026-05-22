@@ -300,6 +300,238 @@ function startServer() {
     await page.waitForTimeout(300);
   });
 
+  // ─── Birth defaults ───
+  await test('Birth date defaults to 1982-11-11', async () => {
+    const val = await page.evaluate(() => document.getElementById('birthDate').value);
+    if (val !== '1982-11-11') throw new Error(`Expected 1982-11-11, got ${val}`);
+  });
+
+  await test('Birth hour defaults to 亥時 (index 11)', async () => {
+    const val = await page.evaluate(() => document.getElementById('birthHour').value);
+    if (val !== '11') throw new Error(`Expected hour 11 (亥), got ${val}`);
+  });
+
+  // ─── 小限 12 palaces ───
+  await test('小限 shows in all 12 palaces when toggled', async () => {
+    await page.click('#chkXiaoxian + label');
+    await page.waitForTimeout(100);
+    const count = await page.evaluate(() => {
+      return document.querySelectorAll('.horo-info.xiaoxian.show').length;
+    });
+    await page.click('#chkXiaoxian + label');
+    await page.waitForTimeout(100);
+    if (count !== 12) throw new Error(`Expected 12 小限 cells, got ${count}`);
+  });
+
+  await test('小限 current age palace is bold', async () => {
+    await page.click('#chkXiaoxian + label');
+    await page.waitForTimeout(100);
+    const boldCount = await page.evaluate(() => {
+      return document.querySelectorAll('.horo-info.xiaoxian .horo-value[style*="700"]').length;
+    });
+    await page.click('#chkXiaoxian + label');
+    await page.waitForTimeout(100);
+    if (boldCount < 1) throw new Error('No bold current age palace found');
+  });
+
+  // ─── 流年 12 palaces ───
+  await test('流年 shows in all 12 palaces when toggled', async () => {
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    const count = await page.evaluate(() => {
+      return document.querySelectorAll('.horo-info.flowyear.show').length;
+    });
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    if (count !== 12) throw new Error(`Expected 12 流年 cells, got ${count}`);
+  });
+
+  await test('流年 non-starting palaces show role name only (no 流 prefix)', async () => {
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    const hasPrefix = await page.evaluate(() => {
+      const cells = document.querySelectorAll('.horo-info.flowyear.show .horo-value');
+      // Count how many cells have 流年 prefix in their label
+      const labels = document.querySelectorAll('.horo-info.flowyear.show .horo-label');
+      // Only 1 starting cell should have the label
+      return labels.length;
+    });
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    if (hasPrefix !== 1) throw new Error(`Expected exactly 1 流年 label (starting palace), got ${hasPrefix}`);
+  });
+
+  await test('流年 cells have purple color on .horo-value', async () => {
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    const color = await page.evaluate(() => {
+      const first = document.querySelector('.horo-info.flowyear.show .horo-value');
+      if (!first) return null;
+      return getComputedStyle(first).color;
+    });
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    // Purple = #8e44ad → rgb(142, 68, 173)
+    if (!color || !color.includes('68, 173') && !color.includes('142')) {
+      throw new Error(`流年 .horo-value color not purple: ${color}`);
+    }
+  });
+
+  // ─── 流月/流日/流時 ───
+  for (const [id, cls, label] of [
+    ['chkFlowMonth', 'flowmonth', '流月'],
+    ['chkFlowDay', 'flowday', '流日'],
+    ['chkFlowHour', 'flowhour', '流時'],
+  ]) {
+    await test(`${label} shows in all 12 palaces`, async () => {
+      await page.click(`#${id} + label`);
+      await page.waitForTimeout(100);
+      const count = await page.evaluate((c) => {
+        return document.querySelectorAll(`.horo-info.${c}.show`).length;
+      }, cls);
+      await page.click(`#${id} + label`);
+      await page.waitForTimeout(100);
+      if (count !== 12) throw new Error(`Expected 12 ${label} cells, got ${count}`);
+    });
+  }
+
+  // ─── No dashed borders ───
+  await test('No dashed borders between horo-info rows', async () => {
+    const hasDashed = await page.evaluate(() => {
+      const el = document.querySelector('.horo-info');
+      if (!el) return false;
+      const sheets = document.styleSheets;
+      for (const s of sheets) {
+        try {
+          for (const r of s.cssRules) {
+            if (!r.selectorText || !r.style) continue;
+            if (r.selectorText.includes('horo-info') && r.style.borderTop && r.style.borderTop.includes('dashed')) {
+              return true;
+            }
+          }
+        } catch(e) {}
+      }
+      return false;
+    });
+    if (hasDashed) throw new Error('Dashed border still defined on .horo-info');
+  });
+
+  // ─── Predictive auto-recalculate ───
+  await test('Changing target date recalculates horoscope', async () => {
+    const oldHour = await page.evaluate(() => {
+      const el = document.getElementById('targetHour');
+      return el ? el.value : null;
+    });
+    // Toggle 流年 on
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    // Change target date
+    await page.evaluate(() => {
+      const el = document.getElementById('targetDate');
+      el.value = '2026-06-15';
+      el.dispatchEvent(new Event('change'));
+    });
+    await page.waitForTimeout(300);
+    // Flow year cells should still be present after recalc
+    const flowCells = await page.evaluate(() => {
+      return document.querySelectorAll('.horo-info.flowyear.show').length;
+    });
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    if (flowCells !== 12) throw new Error(`Expected 12 流年 after date change, got ${flowCells}`);
+  });
+
+  // ─── Target time display format ───
+  await test('Target time display shows current 時辰 label', async () => {
+    const text = await page.evaluate(() => {
+      const el = document.getElementById('targetTimeDisplay');
+      return el ? el.textContent : '';
+    });
+    if (!text.includes('時')) {
+      throw new Error('Time display missing 時辰 label: ' + text);
+    }
+  });
+
+  // ─── Major/minor/adjective star styles ───
+  await test('Major stars are bold (≥600), minor stars normal', async () => {
+    const styles = await page.evaluate(() => {
+      const cell = document.querySelector('.palace-cell');
+      if (!cell) return null;
+      const all = cell.querySelectorAll('.star');
+      let majorCount = 0, majorBold = 0;
+      for (const s of all) {
+        if (s.classList.contains('major')) {
+          majorCount++;
+          const fw = parseInt(getComputedStyle(s).fontWeight);
+          if (fw >= 600) majorBold++;
+        }
+      }
+      return { majorCount, majorBold };
+    });
+    if (!styles || styles.majorCount === 0) throw new Error('No major stars found');
+    if (styles.majorBold < styles.majorCount) {
+      throw new Error(`${styles.majorBold}/${styles.majorCount} major stars have fw≥600`);
+    }
+  });
+
+  // ─── Brightness markers ───
+  await test('Brightness markers present on stars', async () => {
+    const hasBrightness = await page.evaluate(() => {
+      const cells = document.querySelectorAll('.palace-cell');
+      for (const c of cells) {
+        const text = c.textContent;
+        if (text.includes('廟') || text.includes('旺') || text.includes('得')
+          || text.includes('利') || text.includes('平') || text.includes('陷')) {
+          return true;
+        }
+      }
+      return false;
+    });
+    if (!hasBrightness) throw new Error('No brightness markers (廟旺得利平陷) found in any palace');
+  });
+
+  // ─── Center info ───
+  await test('Center shows 五行局', async () => {
+    const text = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('.center-cell')).map(c => c.textContent).join(' ');
+    });
+    if (!text.includes('局')) throw new Error('五行局 not found in center cells: ' + text);
+  });
+
+  await test('Center shows 五行局 and 子平四柱', async () => {
+    const text = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('.center-cell')).map(c => c.textContent).join(' ');
+    });
+    if (!text.includes('局')) throw new Error('五行局 not found: ' + text);
+    if (!text.includes('年') || !text.includes('月')) throw new Error('四柱年月 not found: ' + text);
+  });
+
+  await test('Center shows 生肖', async () => {
+    const text = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('.center-cell')).map(c => c.textContent).join(' ');
+    });
+    if (!text.includes('狗') && !text.includes('豬') && !text.includes('鼠')
+      && !text.includes('牛') && !text.includes('虎') && !text.includes('兔')
+      && !text.includes('龍') && !text.includes('蛇') && !text.includes('馬')
+      && !text.includes('羊') && !text.includes('猴') && !text.includes('雞')) {
+      throw new Error('生肖 not found in center: ' + text);
+    }
+  });
+
+  // ─── 天干地支 in each palace ───
+  await test('All 12 palaces show 天干地支', async () => {
+    const count = await page.evaluate(() => {
+      let found = 0;
+      document.querySelectorAll('.palace-cell').forEach(cell => {
+        const text = cell.textContent;
+        // Check for Chinese branch characters (子丑寅卯辰巳午未申酉戌亥)
+        if (/[子丑寅卯辰巳午未申酉戌亥]/.test(text)) found++;
+      });
+      return found;
+    });
+    if (count < 12) throw new Error(`Only ${count}/12 palaces have 天干`);
+  });
+
   // ─── Summary ───
   console.log(`\n📊 Results: ${passed} passed, ${failed} failed, ${passed + failed} total\n`);
   await browser.close();
