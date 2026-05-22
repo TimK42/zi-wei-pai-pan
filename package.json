@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/TimK42/zi-wei-pai-pan#readme",
   "dependencies": {
+    "iztro": "^2.4.7",
     "playwright": "^1.60.0"
   },
   "private": true

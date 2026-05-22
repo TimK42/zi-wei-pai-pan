@@ -177,6 +177,113 @@ function startServer() {
     if (!text.includes('時')) throw new Error('Time display missing 時 label: ' + text);
   });
 
+  // ─── 四化 default ON ───
+  await test('四化 markers visible by default (checked)', async () => {
+    const visible = await page.evaluate(() => {
+      const chk = document.getElementById('chkZihua');
+      if (!chk || !chk.checked) return 'checkbox not checked';
+      const markers = document.querySelectorAll('.transformed');
+      if (markers.length === 0) return 'no .transformed elements found';
+      const first = markers[0];
+      return getComputedStyle(first).display;
+    });
+    if (visible !== 'inline') throw new Error('四化 marker display is ' + visible);
+  });
+
+  await test('四化 toggle hides markers', async () => {
+    await page.click('#chkZihua + label');
+    await page.waitForTimeout(100);
+    const hidden = await page.evaluate(() => {
+      const markers = document.querySelectorAll('.transformed');
+      if (markers.length === 0) return true;
+      return getComputedStyle(markers[0]).display === 'none';
+    });
+    // Re-toggle back on for remaining tests
+    await page.click('#chkZihua + label');
+    await page.waitForTimeout(100);
+    if (!hidden) throw new Error('四化 markers not hidden after toggle off');
+  });
+
+  // ─── 自化默认 OFF ───
+  await test('自化 markers hidden by default (unchecked)', async () => {
+    const hidden = await page.evaluate(() => {
+      const chk = document.getElementById('chkSelfTransform');
+      if (!chk || chk.checked) return 'checkbox is checked';
+      const markers = document.querySelectorAll('.self-transform');
+      if (markers.length === 0) return 'no .self-transform elements found';
+      return markers[0].style.display === 'none' || getComputedStyle(markers[0]).display === 'none';
+    });
+    if (hidden === 'checkbox is checked') throw new Error('自化 checkbox should be unchecked by default');
+    if (hidden === 'no .self-transform elements found') throw new Error('No self-transformation markers rendered (this chart may have none)');
+    if (hidden !== true) throw new Error('自化 markers not hidden by default');
+  });
+
+  await test('自化 toggle reveals markers', async () => {
+    await page.click('#chkSelfTransform + label');
+    await page.waitForTimeout(100);
+    const visible = await page.evaluate(() => {
+      const markers = document.querySelectorAll('.self-transform');
+      if (markers.length === 0) return 'no markers';
+      const first = markers[0];
+      return getComputedStyle(first).display;
+    });
+    // Toggle back off
+    await page.click('#chkSelfTransform + label');
+    await page.waitForTimeout(100);
+    if (visible !== 'inline' && visible !== 'inline-block') {
+      throw new Error('自化 marker display is ' + visible);
+    }
+  });
+
+  await test('Self-transformation markers show mutagen type', async () => {
+    await page.click('#chkSelfTransform + label');
+    await page.waitForTimeout(100);
+    const text = await page.evaluate(() => {
+      const markers = document.querySelectorAll('.self-transform');
+      return Array.from(markers).map(m => m.textContent).join(',');
+    });
+    await page.click('#chkSelfTransform + label');
+    await page.waitForTimeout(100);
+    // Should contain 自 prefix with a mutagen type
+    if (!text.includes('自')) throw new Error('自化 markers missing 自 prefix: ' + text);
+  });
+
+  // ─── 身主 display ───
+  await test('身主 display uses normal sub-info size', async () => {
+    const fontSize = await page.evaluate(() => {
+      const c00 = document.getElementById('center_1_1');
+      if (!c00) return null;
+      // Find the 身主 text node - it's after 廉貞 · 身(申)
+      const text = c00.textContent;
+      // Check inline style not present
+      const spans = c00.querySelectorAll('span');
+      for (const s of spans) {
+        if (s.textContent === '火星' || (s.style && s.style.fontSize === '.6rem')) {
+          return s.style.fontSize + '|' + s.style.color;
+        }
+      }
+      return 'no-inline-style';
+    });
+    if (fontSize && fontSize.includes('.6rem')) {
+      throw new Error('身主 still has small font size: ' + fontSize);
+    }
+  });
+
+  // ─── Date input inline style ───
+  await test('Target date input has no conflicting inline styles', async () => {
+    const style = await page.evaluate(() => {
+      const el = document.getElementById('targetDate');
+      if (!el) return null;
+      return el.getAttribute('style');
+    });
+    if (style && style.includes('display:inline!important')) {
+      throw new Error('Conflicting inline display style: ' + style);
+    }
+    if (style && style.includes('display:inline;')) {
+      throw new Error('Conflicting inline display style: ' + style);
+    }
+  });
+
   await test('Recalculate when gender changes', async () => {
     // Click female radio
     await page.click('#genderF');

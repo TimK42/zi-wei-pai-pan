@@ -35,6 +35,7 @@ header p{font-size:.85rem;color:#888}
 .star.adjunct{color:#777;font-size:.65rem}
 .star .brightness{color:#c8a050;font-size:.6rem}
 .star .transformed{font-weight:700;font-size:.6rem;display:inline}
+.star .self-transform{color:#b8860b;font-size:.58rem;font-weight:600;margin-left:1px}
 .transformed.祿{color:#2a7d2a}
 .transformed.權{color:#2a5da8}
 .transformed.科{color:#8a4a9a}
@@ -140,7 +141,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
 <div class="prediction-bar">
   <span class="time-label"><i class="bi bi-clock"></i> 預測目標時間</span>
   <span class="time-input">
-    <input type="date" id="targetDate" class="form-control form-control-sm d-inline-block" style="width:auto;display:inline!important">
+    <input type="date" id="targetDate" class="form-control form-control-sm" style="width:auto;display:inline-block">
   </span>
   <span class="time-input">
     <select id="targetHour" style="width:auto">
@@ -173,8 +174,10 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
     <label class="horo-label-btn" for="chkFlowDay">流日</label>
     <input type="checkbox" class="horo-check" id="chkFlowHour">
     <label class="horo-label-btn" for="chkFlowHour">流時</label>
-    <input type="checkbox" class="horo-check" id="chkZihua">
+    <input type="checkbox" class="horo-check" id="chkZihua" checked>
     <label class="horo-label-btn" for="chkZihua">四化</label>
+    <input type="checkbox" class="horo-check" id="chkSelfTransform">
+    <label class="horo-label-btn" for="chkSelfTransform">自化</label>
   </span>
 </div>
 
@@ -195,7 +198,20 @@ const BRANCH_GRID = [
   [0,1],[0,2],[0,3],  // 午未申
   [1,3],[2,3],[3,3]   // 酉戌亥
 ];
-const MUTAGEN_MAP = { '祿':'禄','權':'權','科':'科','忌':'忌' };
+// 四化规则: 天干 → { 星名: 化祿/權/科/忌 }
+const SELF_TRANSFORM_RULES = {
+  '甲':{'廉貞':'祿','破軍':'權','武曲':'科','太陽':'忌'},
+  '乙':{'天機':'祿','天梁':'權','紫微':'科','太陰':'忌'},
+  '丙':{'天同':'祿','天機':'權','文昌':'科','廉貞':'忌'},
+  '丁':{'太陰':'祿','天同':'權','天機':'科','巨門':'忌'},
+  '戊':{'貪狼':'祿','太陰':'權','右弼':'科','天機':'忌'},
+  '己':{'武曲':'祿','貪狼':'權','天梁':'科','文曲':'忌'},
+  '庚':{'太陽':'祿','武曲':'權','太陰':'科','天同':'忌'},
+  '辛':{'巨門':'祿','太陽':'權','文曲':'科','文昌':'忌'},
+  '壬':{'天梁':'祿','紫微':'權','左輔':'科','武曲':'忌'},
+  '癸':{'破軍':'祿','巨門':'權','太陰':'科','貪狼':'忌'},
+};
+
 const HORO_KEYS = [
   { key: 'decadal', id: 'chkDaxian', cls: 'daxian', label: '大限' },
   { key: 'age',     id: 'chkXiaoxian', cls: 'xiaoxian', label: '小限' },
@@ -291,6 +307,15 @@ function renderChart(a) {
         tr.textContent = s.mutagen;
         span.appendChild(tr);
       }
+      // 自化 marker
+      const rules = p.heavenlyStem ? SELF_TRANSFORM_RULES[p.heavenlyStem] : null;
+      if (rules && rules[s.name]) {
+        const st = document.createElement('span');
+        st.className = 'self-transform';
+        st.textContent = '自' + rules[s.name];
+        st.style.display = 'none'; // hidden until 自化 toggle on
+        span.appendChild(st);
+      }
       sa.appendChild(span);
       sa.appendChild(document.createTextNode(' '));
     });
@@ -310,7 +335,7 @@ function renderChart(a) {
   if (c00) {
     c00.innerHTML = '<span class="main-info">'+ (a.fiveElementsClass||'') +'</span>' +
       '<span class="sub-info">'+ (a.soul||'') +' · 身('+ a.earthlyBranchOfBodyPalace +')</span>' +
-      '<span class="sub-info" style="font-size:.6rem;color:#aaa">'+ (a.body||'') +'</span>';
+      '<span class="sub-info">'+ (a.body||'') +'</span>';
   }
   if (c01) {
     const yearPillar = raw?.yearly ? raw.yearly.join('') : pillars[0]||'';
@@ -421,6 +446,15 @@ function setupToggles() {
       });
     });
   }
+  // 自化 toggle: show/hide .self-transform
+  const chkSelf = document.getElementById('chkSelfTransform');
+  if (chkSelf) {
+    chkSelf.addEventListener('change', function() {
+      document.querySelectorAll('.self-transform').forEach(el => {
+        el.style.display = this.checked ? 'inline' : 'none';
+      });
+    });
+  }
 }
 
 function updateTimeDisplay() {
@@ -462,6 +496,13 @@ function runPrediction(force) {
       document.querySelectorAll('.horo-info.'+hk.cls).forEach(el => el.classList.add('show'));
     }
   });
+  // Re-apply 四化 / 自化 states
+  if (document.getElementById('chkZihua').checked) {
+    document.querySelectorAll('.transformed').forEach(el => { el.style.display = 'inline'; });
+  }
+  if (document.getElementById('chkSelfTransform').checked) {
+    document.querySelectorAll('.self-transform').forEach(el => { el.style.display = 'inline'; });
+  }
 }
 
 // ─── Init ───
