@@ -1,0 +1,28 @@
+{
+  "name": "zi-wei-pai-pan",
+  "version": "1.0.0",
+  "description": "純前端的紫微斗數排盤工具 — 單一 HTML 檔案，零後端依賴。",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "node tests/ziwei.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimK42/zi-wei-pai-pan.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TimK42/zi-wei-pai-pan/issues"
+  },
+  "homepage": "https://github.com/TimK42/zi-wei-pai-pan#readme",
+  "dependencies": {
+    "playwright": "^1.60.0"
+  },
+  "private": true
+}

@@ -46,4 +46,4 @@
 
 ---
 
-*This file is updated during the grill-with-docs session as decisions crystallise.*
+*This file was updated during the grill-with-docs session.*
