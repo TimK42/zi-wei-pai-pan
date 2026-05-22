@@ -43,7 +43,7 @@ header p{font-size:.85rem;color:#888}
 .transformed.忌{color:#c33}
 
 /* Horoscope overlay */
-.horo-info{font-size:.62rem;margin-top:4px;padding-top:3px;border-top:1px dashed #ddd;display:none;color:#666}
+.horo-info{font-size:.62rem;margin-top:2px;padding-top:1px;display:none;color:#666}
 .horo-info.show{display:block}
 .horo-info .horo-label{color:#4a6fa5;font-weight:600}
 .horo-info .horo-value{color:#a0522d}
@@ -121,13 +121,13 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
     </div>
     <div class="field">
       <label>出生日期</label>
-      <input type="date" class="form-control form-control-sm" id="birthDate" value="1990-06-15">
+      <input type="date" class="form-control form-control-sm" id="birthDate" value="1982-11-11">
     </div>
     <div class="field">
       <label>出生時間</label>
       <select class="form-select form-select-sm" id="birthHour">
       <option value="0">00:00-01:00 子(早子)</option>
-      <option value="1" selected>01:00-03:00 丑</option>
+      <option value="1">01:00-03:00 丑</option>
       <option value="2">03:00-05:00 寅</option>
       <option value="3">05:00-07:00 卯</option>
       <option value="4">07:00-09:00 辰</option>
@@ -137,7 +137,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
       <option value="8">15:00-17:00 申</option>
       <option value="9">17:00-19:00 酉</option>
       <option value="10">19:00-21:00 戌</option>
-      <option value="11">21:00-23:00 亥</option>
+      <option value="11" selected>21:00-23:00 亥</option>
       <option value="12">23:00-00:00 子(夜子)</option>
       </select>
     </div>
@@ -430,22 +430,18 @@ function updateHoroscope(targetDateStr) {
       return;
     }
 
-    // Single-palace scopes (流年/月/日/時)
+    // Flow cycle scopes (流年/月/日/時): show ALL palaces with role names
     const scope = horoscopeResult[hk.key];
     if (!scope || scope.index === undefined || scope.index < 0) return;
-    const palace = astrolabe.palaces[scope.index];
-    if (!palace) return;
-    const branchIdx = BRANCH_TO_INDEX[palace.earthlyBranch];
-    if (branchIdx === undefined) return;
-    const cell = getCell(branchIdx);
-    if (!cell) return;
-    const infoEl = cell.querySelector('.horo-info.' + hk.cls);
-    if (!infoEl) return;
 
-    let content = '<span class="horo-label">' + hk.label + '</span> ';
-    content += '<span class="horo-value">' + (scope.heavenlyStem || '') + (scope.earthlyBranch || '') + '</span>';
+    const FLOW_ROLES = ['命宮','兄弟','夫妻','子女','財帛','疾厄','遷移','僕役','官祿','田宅','福德','父母'];
+    const startPalace = astrolabe.palaces[scope.index];
+    const startBranch = BRANCH_TO_INDEX[startPalace.earthlyBranch];
+    if (startBranch === undefined) return;
 
-    // Show transformations (四化) for this scope
+    // Precompute value for the starting palace
+    let startContent = '<span class="horo-label">' + hk.label + '</span> ';
+    startContent += '<span class="horo-value">' + (scope.heavenlyStem || '') + (scope.earthlyBranch || '') + '</span>';
     if (scope.mutagen && scope.mutagen.length) {
       const m = scope.mutagen;
       let mStr = '';
@@ -453,9 +449,24 @@ function updateHoroscope(targetDateStr) {
         const names = m.map(x => x.name || x.star || '').filter(Boolean).join(',');
         if (names) mStr = names;
       }
-      if (mStr) content += ' <span class="horo-label">四化: </span><span class="horo-value">' + mStr + '</span>';
+      if (mStr) startContent += ' <span class="horo-label">四化: </span><span class="horo-value">' + mStr + '</span>';
     }
-    infoEl.innerHTML = content;
+
+    astrolabe.palaces.forEach((palace) => {
+      const branchIdx = BRANCH_TO_INDEX[palace.earthlyBranch];
+      if (branchIdx === undefined) return;
+      const cell = getCell(branchIdx);
+      if (!cell) return;
+      const infoEl = cell.querySelector('.horo-info.' + hk.cls);
+      if (!infoEl) return;
+
+      const offset = (branchIdx - startBranch + 12) % 12;
+      if (offset === 0) {
+        infoEl.innerHTML = startContent;
+      } else {
+        infoEl.innerHTML = '<span class="horo-value">' + FLOW_ROLES[offset] + '</span>';
+      }
+    });
   });
 }
 
