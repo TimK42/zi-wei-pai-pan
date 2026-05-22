@@ -395,6 +395,43 @@ function startServer() {
     });
   }
 
+  // ─── Flow 四化 markers ───
+  await test('流年 四化 markers appear on stars when toggled', async () => {
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    const count = await page.evaluate(() => {
+      return document.querySelectorAll('.flow-mutagen.flowyear').length;
+    });
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    if (count < 2) throw new Error(`Expected ≥2 流年 四化 markers, got ${count}`);
+  });
+
+  await test('流月 四化 markers appear on stars when toggled', async () => {
+    await page.click('#chkFlowMonth + label');
+    await page.waitForTimeout(100);
+    const count = await page.evaluate(() => {
+      return document.querySelectorAll('.flow-mutagen.flowmonth').length;
+    });
+    await page.click('#chkFlowMonth + label');
+    await page.waitForTimeout(100);
+    if (count < 2) throw new Error(`Expected ≥2 流月 四化 markers, got ${count}`);
+  });
+
+  await test('Flow 四化 markers hidden when flow checkbox off', async () => {
+    // Toggle on
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    const visible = await page.evaluate(() => {
+      const m = document.querySelector('.flow-mutagen.flowyear');
+      return m ? getComputedStyle(m).display : 'none';
+    });
+    // Toggle off
+    await page.click('#chkFlowYear + label');
+    await page.waitForTimeout(100);
+    if (visible !== 'inline') throw new Error('Flow 四化 should be inline when checked: ' + visible);
+  });
+
   // ─── No dashed borders ───
   await test('No dashed borders between horo-info rows', async () => {
     const hasDashed = await page.evaluate(() => {

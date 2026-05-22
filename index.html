@@ -42,6 +42,13 @@ header p{font-size:.85rem;color:#888}
 .transformed.科{color:#8a4a9a}
 .transformed.忌{color:#c33}
 
+/* Flow 四化 markers on stars */
+.flow-mutagen{font-weight:700;font-size:.6rem;display:inline;margin-left:1px}
+.flow-mutagen.flowyear{color:#8e44ad}
+.flow-mutagen.flowmonth{color:#16a085}
+.flow-mutagen.flowday{color:#d35400}
+.flow-mutagen.flowhour{color:#d43370}
+
 /* Horoscope overlay */
 .horo-info{font-size:.62rem;margin-top:2px;padding-top:1px;display:none;color:#666}
 .horo-info.show{display:block}
@@ -467,6 +474,41 @@ function updateHoroscope(targetDateStr) {
         infoEl.innerHTML = '<span class="horo-value">' + FLOW_ROLES[offset] + '</span>';
       }
     });
+
+    // Add flow 四化 markers to stars
+    if (scope.heavenlyStem && scope.mutagen && Array.isArray(scope.mutagen) && scope.mutagen.length) {
+      const rules = SELF_TRANSFORM_RULES[scope.heavenlyStem];
+      scope.mutagen.forEach(starName => {
+        if (!starName || !rules || !rules[starName]) return;
+        const mutagenType = rules[starName]; // 祿/權/科/忌
+        // Find this star in palace cells and add flow-colored marker
+        astrolabe.palaces.forEach(palace => {
+          const hasStar = palace.majorStars?.some(s => s.name === starName)
+                       || palace.minorStars?.some(s => s.name === starName);
+          if (!hasStar) return;
+          const bIdx = BRANCH_TO_INDEX[palace.earthlyBranch];
+          const cell = getCell(bIdx);
+          if (!cell) return;
+          const starEls = cell.querySelectorAll('.star');
+          for (const se of starEls) {
+            if (se.textContent.trim().startsWith(starName)) {
+              // Remove existing marker for this flow type
+              const old = se.querySelector('.flow-mutagen.' + hk.cls);
+              if (old) old.remove();
+              // Add new marker
+              const fm = document.createElement('span');
+              fm.className = 'flow-mutagen ' + hk.cls;
+              fm.textContent = mutagenType;
+              // Visibility: follow flow checkbox state
+              const cb = document.getElementById(hk.id);
+              fm.style.display = (cb && cb.checked) ? 'inline' : 'none';
+              se.appendChild(fm);
+              break;
+            }
+          }
+        });
+      });
+    }
   });
 }
 
@@ -478,6 +520,10 @@ function setupToggles() {
     cb.addEventListener('change', function() {
       document.querySelectorAll('.horo-info.' + hk.cls).forEach(el => {
         el.classList.toggle('show', this.checked);
+      });
+      // Also toggle flow 四化 markers on stars
+      document.querySelectorAll('.flow-mutagen.' + hk.cls).forEach(el => {
+        el.style.display = this.checked ? 'inline' : 'none';
       });
     });
   });
@@ -539,6 +585,7 @@ function runPrediction(force) {
     const cb = document.getElementById(hk.id);
     if (cb && cb.checked) {
       document.querySelectorAll('.horo-info.'+hk.cls).forEach(el => el.classList.add('show'));
+      document.querySelectorAll('.flow-mutagen.'+hk.cls).forEach(el => { el.style.display = 'inline'; });
     }
   });
   // Re-apply 四化 / 自化 states
