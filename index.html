@@ -72,7 +72,7 @@ header p{font-size:.85rem;color:#888}
 .prediction-bar .time-label{font-weight:600;font-size:.85rem;color:#555;white-space:nowrap}
 .prediction-bar .time-input{flex:0 0 auto}
 .prediction-bar .time-input select{font-size:.78rem;padding:2px 6px;border:1px solid #ddd;border-radius:6px}
-.prediction-bar .time-display{font-size:.78rem;color:#a0522d;font-weight:500;white-space:nowrap}
+
 .horo-checkboxes{display:flex;flex-wrap:wrap;gap:4px;margin-left:4px}
 .horo-check{display:none}
 .horo-label-btn{display:inline-block;padding:4px 10px;font-size:.78rem;border:1px solid #d0c8bc;border-radius:16px;background:#f2e8d8;color:#666;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap}
@@ -153,7 +153,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
     </div>
   </div>
   <div class="prediction-bar">
-  <span class="time-label"><i class="bi bi-clock"></i> 預測目標時間</span>
+  <span class="time-label"><i class="bi bi-clock"></i> 目標時間</span>
   <span class="time-input">
     <input type="date" id="targetDate" class="form-control form-control-sm" style="width:auto;display:inline-block">
   </span>
@@ -173,7 +173,6 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
       <option value="11">21:00 亥</option>
       <option value="12">23:00 子(夜子)</option>
     </select>
-    <span class="time-display" id="targetTimeDisplay"></span>
   </span>
   <span class="horo-checkboxes">
     <input type="checkbox" class="horo-check" id="chkDaxian">
@@ -547,12 +546,7 @@ function setupToggles() {
   }
 }
 
-function updateTimeDisplay() {
-  const h = parseInt(document.getElementById('targetHour').value);
-  const labels = {'0':'子(早子)','1':'丑','2':'寅','3':'卯','4':'辰','5':'巳','6':'午','7':'未','8':'申','9':'酉','10':'戌','11':'亥','12':'子(夜子)'};
-  const display = document.getElementById('targetTimeDisplay');
-  if (display && labels[h]) display.textContent = '(' + labels[h] + '時)';
-}
+
 
 // ─── Calculate ───
 function calculate() {
@@ -604,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('calcBtn').addEventListener('click', calculate);
   document.getElementById('targetDate').addEventListener('change', function() { runPrediction(); });
-  document.getElementById('targetHour').addEventListener('change', function() { updateTimeDisplay(); runPrediction(false); });
+  document.getElementById('targetHour').addEventListener('change', function() { runPrediction(false); });
 
   const now = new Date();
   const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
@@ -613,8 +607,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const h24 = now.getHours();
   const snapIndex = h24 === 0 ? 0 : h24 === 23 ? 12 : Math.floor((h24 + 1) / 2);
   document.getElementById('targetHour').value = snapIndex;
-  updateTimeDisplay();
-
   calculate();
 });
 </script>

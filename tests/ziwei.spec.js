@@ -169,14 +169,6 @@ function startServer() {
     }
   });
 
-  await test('Time display shows 時辰 label on init', async () => {
-    const text = await page.evaluate(() => {
-      const el = document.getElementById('targetTimeDisplay');
-      return el ? el.textContent : '';
-    });
-    if (!text.includes('時')) throw new Error('Time display missing 時 label: ' + text);
-  });
-
   // ─── 四化 default ON ───
   await test('四化 markers visible by default (checked)', async () => {
     const visible = await page.evaluate(() => {
@@ -578,16 +570,7 @@ function startServer() {
     if (flowCells !== 12) throw new Error(`Expected 12 流年 after date change, got ${flowCells}`);
   });
 
-  // ─── Target time display format ───
-  await test('Target time display shows current 時辰 label', async () => {
-    const text = await page.evaluate(() => {
-      const el = document.getElementById('targetTimeDisplay');
-      return el ? el.textContent : '';
-    });
-    if (!text.includes('時')) {
-      throw new Error('Time display missing 時辰 label: ' + text);
-    }
-  });
+  
 
   // ─── Major/minor/adjective star styles ───
   await test('Major stars are bold (≥600), minor stars normal', async () => {
