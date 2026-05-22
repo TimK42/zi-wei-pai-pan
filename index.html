@@ -46,6 +46,12 @@ header p{font-size:.85rem;color:#888}
 .horo-info.show{display:block}
 .horo-info .horo-label{color:#4a6fa5;font-weight:600}
 .horo-info .horo-value{color:#a0522d}
+.horo-info.daxian .horo-label,.horo-info.daxian .horo-value{color:#c0392b}
+.horo-info.xiaoxian .horo-label,.horo-info.xiaoxian .horo-value{color:#27ae60}
+.horo-info.flowyear .horo-label,.horo-info.flowyear .horo-value{color:#8e44ad}
+.horo-info.flowmonth .horo-label,.horo-info.flowmonth .horo-value{color:#16a085}
+.horo-info.flowday .horo-label,.horo-info.flowday .horo-value{color:#d35400}
+.horo-info.flowhour .horo-label,.horo-info.flowhour .horo-value{color:#d43370}
 
 /* Center cells */
 .center-cell{background:#fff;border:1px solid #9a8a7a;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.78rem;color:#6a6050;line-height:1.5;text-align:center;padding:4px}
@@ -63,6 +69,12 @@ header p{font-size:.85rem;color:#888}
 .horo-check{display:none}
 .horo-label-btn{display:inline-block;padding:4px 10px;font-size:.78rem;border:1px solid #d0c8bc;border-radius:16px;background:#f8f5f0;color:#666;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap}
 .horo-label-btn:hover{background:#eee8dc;border-color:#b8a89a}
+#chkDaxian:checked+.horo-label-btn{background:#c0392b;color:#fff;border-color:#a93226}
+#chkXiaoxian:checked+.horo-label-btn{background:#27ae60;color:#fff;border-color:#1e8449}
+#chkFlowYear:checked+.horo-label-btn{background:#8e44ad;color:#fff;border-color:#7d3c98}
+#chkFlowMonth:checked+.horo-label-btn{background:#16a085;color:#fff;border-color:#138d75}
+#chkFlowDay:checked+.horo-label-btn{background:#d35400;color:#fff;border-color:#ba4a00}
+#chkFlowHour:checked+.horo-label-btn{background:#d43370;color:#fff;border-color:#bb2d5e}
 .horo-check:checked+.horo-label-btn{background:#4a6fa5;color:#fff;border-color:#3a5f95}
 
 /* Alert */
