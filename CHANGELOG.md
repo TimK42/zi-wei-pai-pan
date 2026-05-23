@@ -28,8 +28,6 @@
 - Updated CHANGELOG with all recent changes
 - Synced GitHub Release v1.0.0 notes with CHANGELOG content
 
-
-
 ### SEO Optimization
 - Unique titles and meta descriptions (150-160 chars) for all pages
 - Open Graph tags (og:title, og:description, og:type, og:url, og:locale)
@@ -59,16 +57,6 @@
 
 ### Ad Monetization
 - Google AdSense code injected into all pages
-
-### Late Changes (post-AdSense)
-- Default birth date changed from hardcoded 1982-11-11 to dynamic today's date + current hour
-- Dark mode support via `prefers-color-scheme` media query (all 4 pages)
-- Adjunct star (雜星) font-size set to `.5em` for exact 1/2 ratio of main star
-- Center cell lunar date now includes '日' suffix
-- Center cell shows calculated age (實歲) between lunar date and zodiac
-- Flow palace role names (流年/月/日/時) displayed in palace header, left-aligned after 本命 宮名
-- Mobile: flow role names auto-abbreviated to single characters, no gap between abbreviations
-- `ads.txt` added for AdSense authorized seller compliance
 
 ### Late Changes (post-AdSense deployment)
 - Default birth date changed from hardcoded 1982-11-11 to dynamic today's date + current hour
