@@ -56,7 +56,7 @@ header p{font-size:.85rem;color:#888}
 .prediction-bar .time-input select,.prediction-bar .time-input input.form-control{background:#f2e8d8}
 
 /* Chart Grid */
-.chart-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:0;margin-bottom:16px;border:2px solid #8a7a68;border-radius:8px;overflow:hidden}
+.chart-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:0;margin-bottom:16px;border:2px solid #8a7a68;border-radius:8px;overflow:hidden;min-height:560px}
 .palace-cell{background:#d0b898;border:1px solid #8a7a68;border-radius:0;padding:6px 4px;min-height:140px;font-size:.78rem;line-height:1.35;position:relative;overflow:hidden}
 .palace-cell .palace-header{display:flex;align-items:center;margin-bottom:4px;padding-bottom:3px;border-bottom:2px solid #8a7a68}
 .palace-cell .palace-name{font-weight:700;font-size:.85rem;color:#3a5f95;white-space:nowrap}
@@ -133,6 +133,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
 
 @media(max-width:600px){
   .palace-cell{min-height:110px;font-size:.65rem;padding:4px 3px}
+  .chart-grid{min-height:450px}
   .palace-cell .palace-name{font-size:.7rem}
   .star{font-size:.62rem}
   .star.minor{font-size:.47rem}
