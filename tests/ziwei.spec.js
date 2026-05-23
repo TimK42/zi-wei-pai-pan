@@ -503,6 +503,90 @@ function startServer() {
     if (count < 2 || count > 6) throw new Error(`Unexpected duplicate marker count: ${count}`);
   });
 
+  // ─── 上一個 / 下一個 時辰按鈕 ───
+  await test('Previous/Next hour buttons exist', async () => {
+    const prevBtn = await page.$('#prevHourBtn');
+    const nextBtn = await page.$('#nextHourBtn');
+    if (!prevBtn) throw new Error('Previous hour button not found');
+    if (!nextBtn) throw new Error('Next hour button not found');
+    const prevText = await prevBtn.textContent();
+    const nextText = await nextBtn.textContent();
+    if (!prevText.includes('上一個')) throw new Error('Prev button text wrong: ' + prevText);
+    if (!nextText.includes('下一個')) throw new Error('Next button text wrong: ' + nextText);
+  });
+
+  await test('Next hour goes to next option in dropdown', async () => {
+    await page.selectOption('#targetHour', '5'); // start at 巳
+    await page.waitForTimeout(100);
+    const val = await page.evaluate(() => document.getElementById('targetHour').value);
+    if (val !== '5') throw new Error(`Start value should be 5, got ${val}`);
+    await page.click('#nextHourBtn');
+    await page.waitForTimeout(100);
+    const nextVal = await page.evaluate(() => document.getElementById('targetHour').value);
+    if (nextVal !== '6') throw new Error(`After next from 5 expected 6, got ${nextVal}`);
+  });
+
+  await test('Previous hour goes to previous option in dropdown', async () => {
+    await page.selectOption('#targetHour', '5'); // start at 巳
+    await page.waitForTimeout(100);
+    await page.click('#prevHourBtn');
+    await page.waitForTimeout(100);
+    const prevVal = await page.evaluate(() => document.getElementById('targetHour').value);
+    if (prevVal !== '4') throw new Error(`After prev from 5 expected 4, got ${prevVal}`);
+  });
+
+  await test('Next from 夜子 wraps to 早子 with next-day date', async () => {
+    // Set to a known date at 夜子
+    await page.evaluate(() => {
+      document.getElementById('targetDate').value = '2026-05-23';
+      document.getElementById('targetHour').value = '12';
+    });
+    await page.waitForTimeout(100);
+    const origDate = await page.evaluate(() => document.getElementById('targetDate').value);
+    if (origDate !== '2026-05-23') throw new Error(`Expected 2026-05-23, got ${origDate}`);
+    await page.click('#nextHourBtn');
+    await page.waitForTimeout(100);
+    const newVal = await page.evaluate(() => document.getElementById('targetHour').value);
+    const newDate = await page.evaluate(() => document.getElementById('targetDate').value);
+    if (newVal !== '0') throw new Error(`After next from 12 expected 0, got ${newVal}`);
+    if (newDate !== '2026-05-24') throw new Error(`Expected next-day 2026-05-24, got ${newDate}`);
+  });
+
+  await test('Previous from 早子 wraps to 夜子 with previous-day date', async () => {
+    await page.evaluate(() => {
+      document.getElementById('targetDate').value = '2026-05-23';
+      document.getElementById('targetHour').value = '0';
+    });
+    await page.waitForTimeout(100);
+    await page.click('#prevHourBtn');
+    await page.waitForTimeout(100);
+    const newVal = await page.evaluate(() => document.getElementById('targetHour').value);
+    const newDate = await page.evaluate(() => document.getElementById('targetDate').value);
+    if (newVal !== '12') throw new Error(`After prev from 0 expected 12, got ${newVal}`);
+    if (newDate !== '2026-05-22') throw new Error(`Expected previous-day 2026-05-22, got ${newDate}`);
+  });
+
+  await test('Hour nav triggers chart recalculation', async () => {
+    // Set known date/hour and verify palace cells re-render after nav
+    await page.evaluate(() => {
+      document.getElementById('targetDate').value = '2026-05-23';
+      document.getElementById('targetHour').value = '1';
+    });
+    await page.waitForTimeout(100);
+    const cellCountBefore = await page.evaluate(() => {
+      return document.querySelectorAll('.palace-cell').length;
+    });
+    await page.click('#nextHourBtn');
+    await page.waitForTimeout(100);
+    const cellCountAfter = await page.evaluate(() => {
+      return document.querySelectorAll('.palace-cell').length;
+    });
+    if (cellCountAfter !== 12) throw new Error(`Expected 12 palace cells after nav, got ${cellCountAfter}`);
+    if (cellCountBefore !== cellCountAfter) {
+      throw new Error(`Palace cell count changed after nav: ${cellCountBefore} → ${cellCountAfter}`);
+    }
+  });
+
   await test('Flow 四化 persist after horoscope recalculation', async () => {
     // Change target hour to trigger recalculation
     await page.selectOption('#targetHour', '5'); // 寅時

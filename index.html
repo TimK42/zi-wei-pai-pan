@@ -133,7 +133,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
     <div class="field">
       <label>出生時間</label>
       <select class="form-select form-select-sm" id="birthHour">
-      <option value="0">00:00-01:00 子(早子)</option>
+      <option value="0">00:00-01:00 早子</option>
       <option value="1">01:00-03:00 丑</option>
       <option value="2">03:00-05:00 寅</option>
       <option value="3">05:00-07:00 卯</option>
@@ -145,7 +145,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
       <option value="9">17:00-19:00 酉</option>
       <option value="10">19:00-21:00 戌</option>
       <option value="11" selected>21:00-23:00 亥</option>
-      <option value="12">23:00-00:00 子(夜子)</option>
+      <option value="12">23:00-00:00 夜子</option>
       </select>
     </div>
     <div class="field-sm" style="padding-top:20px">
@@ -159,7 +159,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
   </span>
   <span class="time-input">
     <select id="targetHour" style="width:auto">
-      <option value="0">00:00 子(早子)</option>
+      <option value="0">00:00 早子</option>
       <option value="1">01:00 丑</option>
       <option value="2">03:00 寅</option>
       <option value="3">05:00 卯</option>
@@ -171,9 +171,11 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
       <option value="9">17:00 酉</option>
       <option value="10">19:00 戌</option>
       <option value="11">21:00 亥</option>
-      <option value="12">23:00 子(夜子)</option>
+      <option value="12">23:00 夜子</option>
     </select>
   </span>
+  <button class="btn btn-outline-secondary btn-sm" id="prevHourBtn"><i class="bi bi-chevron-left"></i> 上一個</button>
+  <button class="btn btn-outline-secondary btn-sm" id="nextHourBtn">下一個 <i class="bi bi-chevron-right"></i></button>
   <span class="horo-checkboxes">
     <input type="checkbox" class="horo-check" id="chkDaxian">
     <label class="horo-label-btn" for="chkDaxian">大限</label>
@@ -610,6 +612,41 @@ document.addEventListener('DOMContentLoaded', function() {
   const h24 = now.getHours();
   const snapIndex = h24 === 0 ? 0 : h24 === 23 ? 12 : Math.floor((h24 + 1) / 2);
   document.getElementById('targetHour').value = snapIndex;
+  calculate();
+});
+
+// ─── 上一個 / 下一個 時辰按鈕 ───
+document.getElementById('prevHourBtn').addEventListener('click', function() {
+  const sel = document.getElementById('targetHour');
+  const dateInput = document.getElementById('targetDate');
+  const curVal = parseInt(sel.value);
+  const maxVal = 12;
+  if (curVal === 0) {
+    // 從早子跨日到前一天的夜子
+    sel.value = maxVal;
+    const d = new Date(dateInput.value);
+    d.setDate(d.getDate() - 1);
+    dateInput.value = d.toISOString().slice(0, 10);
+  } else {
+    sel.value = curVal - 1;
+  }
+  calculate();
+});
+
+document.getElementById('nextHourBtn').addEventListener('click', function() {
+  const sel = document.getElementById('targetHour');
+  const dateInput = document.getElementById('targetDate');
+  const curVal = parseInt(sel.value);
+  const maxVal = 12;
+  if (curVal === maxVal) {
+    // 從夜子跨日到後一天的早子
+    sel.value = 0;
+    const d = new Date(dateInput.value);
+    d.setDate(d.getDate() + 1);
+    dateInput.value = d.toISOString().slice(0, 10);
+  } else {
+    sel.value = curVal + 1;
+  }
   calculate();
 });
 </script>
