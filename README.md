@@ -138,8 +138,14 @@ node tests/ziwei.spec.js
 ```
 zi-wei-pai-pan/
 ├── index.html                        # 排盤主頁面
+├── about.html                        # 關於頁面（功能簡介、免責聲明）
+├── contact.html                      # 聯絡我們
+├── privacy-policy.html               # 隱私權政策
 ├── README.md                         # 本文件
 ├── CONTEXT.md                        # 領域術語詞彙表
+├── CHANGELOG.md                      # 版本變更紀錄
+├── robots.txt                        # 搜尋引擎爬蟲設定
+├── sitemap.xml                       # 網站地圖
 ├── tests/
 │   └── ziwei.spec.js                 # Playwright 端到端測試（52 tests）
 ├── tools/
