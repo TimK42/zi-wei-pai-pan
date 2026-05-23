@@ -63,6 +63,11 @@ header p{font-size:.85rem;color:#888}
 .palace-cell .flow-roles{white-space:nowrap}
 .palace-cell .palace-branch{font-size:.65rem;color:#7a7060;margin-left:auto;white-space:nowrap}
 .star{display:inline-block;margin-right:1px;font-size:.75rem}
+.stars-area{display:flex;justify-content:space-between;align-items:stretch;flex:1;min-height:0}
+.stars-left,.stars-right{display:flex;flex-direction:column;gap:1px}
+.stars-left{align-items:flex-start}
+.stars-right{align-items:flex-end}
+.stars-area .star{display:block;white-space:nowrap}
 .star.major{font-weight:600;color:#1a1a1a}
 .star.minor{color:#555;font-size:.56rem}
 .star.adjunct{color:#6a6050;font-size:.5em}
@@ -396,11 +401,11 @@ function renderChart(a) {
     // Stars
     const sa = cell.querySelector('.stars-area');
     sa.innerHTML = '';
-    const allStars = [...p.majorStars, ...p.minorStars, ...p.adjectiveStars];
-    allStars.forEach(s => {
-      const span = document.createElement('span');
-      span.className = 'star ' + s.type;
-      span.textContent = s.name;
+    const leftCol = document.createElement('div');
+    leftCol.className = 'stars-left';
+    const rightCol = document.createElement('div');
+    rightCol.className = 'stars-right';
+    const renderStar = function(span, s, col) {
       if (s.brightness) {
         const br = document.createElement('span');
         br.className = 'brightness';
@@ -422,9 +427,28 @@ function renderChart(a) {
         st.style.display = 'none'; // hidden until 自化 toggle on
         span.appendChild(st);
       }
-      sa.appendChild(span);
-      sa.appendChild(document.createTextNode(' '));
+      col.appendChild(span);
+    };
+    p.majorStars.forEach(s => {
+      const span = document.createElement('span');
+      span.className = 'star ' + s.type;
+      span.textContent = s.name;
+      renderStar(span, s, leftCol);
     });
+    p.minorStars.forEach(s => {
+      const span = document.createElement('span');
+      span.className = 'star ' + s.type;
+      span.textContent = s.name;
+      renderStar(span, s, rightCol);
+    });
+    p.adjectiveStars.forEach(s => {
+      const span = document.createElement('span');
+      span.className = 'star ' + s.type;
+      span.textContent = s.name;
+      renderStar(span, s, rightCol);
+    });
+    sa.appendChild(leftCol);
+    sa.appendChild(rightCol);
   }
 
   // Center cells
