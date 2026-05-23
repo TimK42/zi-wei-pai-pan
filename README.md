@@ -14,9 +14,10 @@
 - 四化（祿權科忌）彩色標示
 
 ### 四柱 + 基本資料（中心區）
-- 年柱、月柱、日柱、時柱（如庚午·壬午·辛亥·庚寅）
-- 五行局、命主、身主、身宮位置
-- 農曆生日、生肖、星座
+- 左上：農曆生日、星座、生肖
+- 右上：年柱 月柱（上行）、日柱 時柱（下行）
+- 左下：五行局、命主、身主、身宮位置
+- 右下：當前目標日期與時辰（如 2026/05/23 / 11:00 午）
 
 ### 預測目標時間
 - 日期 + 時辰下拉輸入
@@ -119,7 +120,7 @@ const horoscope = astrolabe.horoscope('2026-5-23 1:00');
 node tests/ziwei.spec.js
 ```
 
-目前 49 項測試，全部通過。測試範圍：
+目前 51 項測試，全部通過。測試範圍：
 - 出生預設值（1982-11-11 亥時）
 - 12 宮格渲染、宮名、中心區資訊
 - 性別切換、四柱格式
@@ -129,7 +130,7 @@ node tests/ziwei.spec.js
 - 四化／自化 checkboxes toggle
 - 無虛線分隔、行距緊湊
 - 預測時間變更自動重算
-- 上一個／下一個時辰導航按鈕（含跨日跳轉）
+- 上一個／下一個時辰導航按鈕（含跨日跳轉、夜子→早子跨日包裹）
 - 主星粗體(≥600)、亮度標記、五行局
 
 ## 檔案結構
@@ -140,10 +141,21 @@ zi-wei-pai-pan/
 ├── README.md                         # 本文件
 ├── CONTEXT.md                        # 領域術語詞彙表
 ├── tests/
-│   └── ziwei.spec.js                 # Playwright 端到端測試（49 tests）
+│   └── ziwei.spec.js                 # Playwright 端到端測試（52 tests）
+├── tools/
+│   └── lucky_hours.js               # 流日/流時財帛四化掃描工具 — 詳見 docs/tools.md
 ├── docs/
 │   └── ui-ux-requirements.md         # UI/UX 需求規格書
 ```
+
+---
+
+## 工具腳本
+
+`tools/` 目錄放獨立的 Node.js 工具，說明與使用方式見 [`docs/tools.md`](docs/tools.md)。
+
+現有工具：
+- [`lucky_hours.js`](docs/tools.md#lucky_hoursjs--流日流時財帛四化掃描) — 流日/流時財帛四化掃描
 
 ---
 

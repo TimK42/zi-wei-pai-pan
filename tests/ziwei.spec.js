@@ -82,19 +82,15 @@ function startServer() {
     if (set.size < 10) throw new Error('Too few unique 時辰 labels: ' + labels.join(','));
   });
 
-  // ─── Q3: 四柱 B format ───
+  // ─── Q3: 四柱 B format — now in center_1_2 —──
   await test('Four pillars in B format (Q3)', async () => {
     const pillarText = await page.evaluate(() => {
       const c01 = document.getElementById('center_1_2');
       return c01 ? c01.textContent : '';
     });
-    // Should contain 年 and 月 in same string e.g. "庚午年 壬午月"
-    if (!pillarText.includes('年') || !pillarText.includes('月')) {
-      throw new Error('Pillar B format not found: ' + pillarText);
-    }
-    // Should NOT have the old "年 · 月" label
-    if (pillarText.includes('年 · 月')) {
-      throw new Error('Old label format still present');
+    // Contains 年/月/日/時 (both pillar rows in one cell)
+    if (!pillarText.includes('年') || !pillarText.includes('月') || !pillarText.includes('日') || !pillarText.includes('時')) {
+      throw new Error('Pillar text not complete: ' + pillarText);
     }
   });
 
@@ -143,13 +139,29 @@ function startServer() {
     if (names.length < 12) throw new Error(`Got ${names.length} palace names: ${names.join(',')}`);
   });
 
-  await test('Bottom-right center shows lunar date', async () => {
+  await test('Top-left center shows lunar date', async () => {
+    const text = await page.evaluate(() => {
+      const c00 = document.getElementById('center_1_1');
+      return c00 ? c00.textContent : '';
+    });
+    if (!text.includes('一九九') && !text.includes('年') && !text.includes('月')) {
+      throw new Error('Lunar date not found in center top-left: ' + text);
+    }
+  });
+
+  await test('Bottom-right center shows target time', async () => {
+    // First set to a known target time
+    await page.evaluate(() => {
+      document.getElementById('targetDate').value = '2026-05-23';
+      document.getElementById('targetHour').value = '6';
+    });
+    await page.waitForTimeout(100);
     const text = await page.evaluate(() => {
       const c11 = document.getElementById('center_2_2');
       return c11 ? c11.textContent : '';
     });
-    if (!text.includes('一九九') && !text.includes('年') && !text.includes('月')) {
-      throw new Error('Lunar date not found in center bottom-right: ' + text);
+    if (!text.includes('2026/05/23') || !text.includes('午')) {
+      throw new Error('Target time not correct in bottom-right: ' + text);
     }
   });
 
@@ -243,12 +255,10 @@ function startServer() {
   // ─── 身主 display ───
   await test('身主 display uses normal sub-info size', async () => {
     const fontSize = await page.evaluate(() => {
-      const c00 = document.getElementById('center_1_1');
-      if (!c00) return null;
-      // Find the 身主 text node - it's after 廉貞 · 身(申)
-      const text = c00.textContent;
-      // Check inline style not present
-      const spans = c00.querySelectorAll('span');
+      const c10 = document.getElementById('center_2_1');
+      if (!c10) return null;
+      const text = c10.textContent;
+      const spans = c10.querySelectorAll('span');
       for (const s of spans) {
         if (s.textContent === '火星' || (s.style && s.style.fontSize === '.6rem')) {
           return s.style.fontSize + '|' + s.style.color;

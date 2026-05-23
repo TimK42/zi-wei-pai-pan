@@ -353,23 +353,29 @@ function renderChart(a) {
   const raw = a.rawDates?.chineseDate;
   
   if (c00) {
-    c00.innerHTML = '<span class="main-info">'+ (a.fiveElementsClass||'') +'</span>' +
-      '<span class="sub-info">'+ (a.soul||'') +' · 身('+ a.earthlyBranchOfBodyPalace +')</span>' +
-      '<span class="sub-info">'+ (a.body||'') +'</span>';
+    c00.innerHTML = '<span class="main-info">'+ (a.lunarDate||'') +'</span>' +
+      '<span class="sub-info">'+ (a.sign||'') +' · '+ (a.zodiac||'') +'</span>';
   }
   if (c01) {
     const yearPillar = raw?.yearly ? raw.yearly.join('') : pillars[0]||'';
     const monthPillar = raw?.monthly ? raw.monthly.join('') : pillars[1]||'';
-    c01.innerHTML = '<span class="year-col">'+ yearPillar +'年 '+ monthPillar +'月</span>';
-  }
-  if (c10) {
     const dayPillar = raw?.daily ? raw.daily.join('') : pillars[2]||'';
     const hourPillar = raw?.hourly ? raw.hourly.join('') : pillars[3]||'';
-    c10.innerHTML = '<span class="year-col">'+ dayPillar +'日 '+ hourPillar +'時</span>';
+    c01.innerHTML = '<span class="year-col">'+ yearPillar +'年 '+ monthPillar +'月</span><br><span class="year-col">'+ dayPillar +'日 '+ hourPillar +'時</span>';
+  }
+  if (c10) {
+    c10.innerHTML = '<span class="main-info">'+ (a.fiveElementsClass||'') +'</span>' +
+      '<span class="sub-info">'+ (a.soul||'') +' · 身('+ a.earthlyBranchOfBodyPalace +')</span>' +
+      '<span class="sub-info">'+ (a.body||'') +'</span>';
   }
   if (c11) {
-    c11.innerHTML = '<span class="main-info">'+ (a.lunarDate||'') +'</span>' +
-      '<span class="sub-info">'+ (a.sign||'') +' · '+ (a.zodiac||'') +'</span>';
+    // 目標時間（與下拉選單一致）
+    const dt = document.getElementById('targetDate')?.value || '';
+    const hourSel = document.getElementById('targetHour');
+    const hourText = hourSel ? hourSel.options[hourSel.selectedIndex]?.text || '' : '';
+    const dateStr = dt.replace(/-/g, '/');
+    c11.innerHTML = '<span class="main-info" style="font-size:.82rem">'+ dateStr +'</span>' +
+      '<span class="year-col" style="font-size:.8rem">'+ hourText +'</span>';
   }
 }
 
