@@ -418,7 +418,21 @@ function renderChart(a) {
   const raw = a.rawDates?.chineseDate;
   
   if (c00) {
-    c00.innerHTML = '<span class="main-info">'+ (a.lunarDate||'') +'</span>' +
+    // Add '日' to lunar date
+    const lunarDate = (a.lunarDate||'') + '日';
+    // Calculate age from birth date
+    const birthVal = document.getElementById('birthDate').value;
+    let ageStr = '';
+    if (birthVal) {
+      const birth = new Date(birthVal);
+      const now = new Date();
+      let age = now.getFullYear() - birth.getFullYear();
+      const mDiff = now.getMonth() - birth.getMonth();
+      if (mDiff < 0 || (mDiff === 0 && now.getDate() < birth.getDate())) age--;
+      ageStr = age + '歲';
+    }
+    c00.innerHTML = '<span class="main-info">'+ lunarDate +'</span>' +
+      '<span class="sub-info">'+ ageStr +'</span>' +
       '<span class="sub-info">'+ (a.sign||'') +' · '+ (a.zodiac||'') +'</span>';
   }
   if (c01) {
