@@ -68,6 +68,12 @@ header p{font-size:.85rem;color:#888}
 .star .brightness{color:#b8853a;font-size:.6rem}
 .star .transformed{font-weight:700;font-size:.6rem;display:inline}
 .star .self-transform{color:#b8860b;font-size:.58rem;font-weight:600;margin-left:1px}
+.flow-role{font-size:.55rem;font-weight:600;margin-left:3px;display:none}
+.flow-role.show{display:inline}
+.flow-role.flowyear{color:#8e44ad}
+.flow-role.flowmonth{color:#16a085}
+.flow-role.flowday{color:#d35400}
+.flow-role.flowhour{color:#d43370}
 .transformed.祿{color:#2a7d2a}
 .transformed.權{color:#2a5da8}
 .transformed.科{color:#8a4a9a}
@@ -335,7 +341,7 @@ function buildGrid() {
         cell.className = 'palace-cell';
         cell.dataset.branch = branchIdx;
         cell.innerHTML =
-          '<div class="palace-header"><span class="palace-name"></span><span class="palace-branch"></span></div>' +
+          '<div class="palace-header"><span class="palace-name"></span><span class="flow-roles"></span><span class="palace-branch"></span></div>' +
           '<div class="stars-area"></div>' +
           HORO_KEYS.map(h => '<div class="horo-info '+h.cls+'"></div>').join('');
         grid.appendChild(cell);
@@ -462,6 +468,7 @@ function renderChart(a) {
 function updateHoroscope(targetDateStr) {
   const horoEls = document.querySelectorAll('.horo-info');
   horoEls.forEach(el => { el.innerHTML = ''; });
+  document.querySelectorAll('.flow-roles').forEach(el => { el.innerHTML = ''; });
 
   if (!astrolabe || !targetDateStr) return;
 
@@ -554,10 +561,25 @@ function updateHoroscope(targetDateStr) {
       if (!infoEl) return;
 
       const offset = (branchIdx - startBranch + 12) % 12;
+      const roleName = FLOW_ROLES_CLOCKWISE[offset];
+
+      // Set flow role name in header
+      const flowRoles = cell.querySelector('.flow-roles');
+      if (flowRoles) {
+        const existing = flowRoles.querySelector('.' + hk.cls);
+        const span = existing || document.createElement('span');
+        span.className = 'flow-role ' + hk.cls;
+        span.textContent = roleName;
+        // Toggle visibility based on checkbox
+        const cb = document.getElementById(hk.id);
+        span.style.display = (cb && cb.checked) ? 'inline' : 'none';
+        if (!existing) flowRoles.appendChild(span);
+      }
+
       if (offset === 0) {
         infoEl.innerHTML = startContent;
       } else {
-        infoEl.innerHTML = '<span class="horo-value">' + FLOW_ROLES_CLOCKWISE[offset] + '</span>';
+        infoEl.innerHTML = ''; // role name now in header, clear horo-info
       }
     });
 
@@ -609,6 +631,10 @@ function setupToggles() {
     cb.addEventListener('change', function() {
       document.querySelectorAll('.horo-info.' + hk.cls).forEach(el => {
         el.classList.toggle('show', this.checked);
+      });
+      // Toggle flow role in header
+      document.querySelectorAll('.flow-role.' + hk.cls).forEach(el => {
+        el.style.display = this.checked ? 'inline' : 'none';
       });
       // Also toggle flow 四化 markers on stars
       document.querySelectorAll('.flow-mutagen.' + hk.cls).forEach(el => {
@@ -678,6 +704,7 @@ function runPrediction(force) {
     const cb = document.getElementById(hk.id);
     if (cb && cb.checked) {
       document.querySelectorAll('.horo-info.'+hk.cls).forEach(el => el.classList.add('show'));
+      document.querySelectorAll('.flow-role.'+hk.cls).forEach(el => { el.style.display = 'inline'; });
       document.querySelectorAll('.flow-mutagen.'+hk.cls).forEach(el => { el.style.display = 'inline'; });
     }
   });
