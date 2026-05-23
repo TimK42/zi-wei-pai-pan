@@ -160,7 +160,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
     </div>
     <div class="field">
       <label>出生日期</label>
-      <input type="date" class="form-control form-control-sm" id="birthDate" value="1982-11-11">
+      <input type="date" class="form-control form-control-sm" id="birthDate">
     </div>
     <div class="field">
       <label>出生時間</label>
@@ -176,7 +176,7 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
       <option value="8">15:00-17:00 申</option>
       <option value="9">17:00-19:00 酉</option>
       <option value="10">19:00-21:00 戌</option>
-      <option value="11" selected>21:00-23:00 亥</option>
+      <option value="11">21:00-23:00 亥</option>
       <option value="12">23:00-00:00 夜子</option>
       </select>
     </div>
@@ -655,10 +655,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const now = new Date();
   const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  document.getElementById('birthDate').value = todayStr;
   document.getElementById('targetDate').value = todayStr;
   // Snap current hour to 時辰 index (0-12)
   const h24 = now.getHours();
   const snapIndex = h24 === 0 ? 0 : h24 === 23 ? 12 : Math.floor((h24 + 1) / 2);
+  document.getElementById('birthHour').value = snapIndex;
   document.getElementById('targetHour').value = snapIndex;
   calculate();
 });

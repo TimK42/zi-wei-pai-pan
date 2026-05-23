@@ -304,14 +304,18 @@ function startServer() {
   });
 
   // ─── Birth defaults ───
-  await test('Birth date defaults to 1982-11-11', async () => {
+  await test('Birth date defaults to today', async () => {
+    const today = new Date();
+    const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
     const val = await page.evaluate(() => document.getElementById('birthDate').value);
-    if (val !== '1982-11-11') throw new Error(`Expected 1982-11-11, got ${val}`);
+    if (val !== todayStr) throw new Error(`Expected ${todayStr}, got ${val}`);
   });
 
-  await test('Birth hour defaults to 亥時 (index 11)', async () => {
+  await test('Birth hour defaults to current 時辰', async () => {
+    const h24 = new Date().getHours();
+    const expected = h24 === 0 ? '0' : h24 === 23 ? '12' : String(Math.floor((h24 + 1) / 2));
     const val = await page.evaluate(() => document.getElementById('birthHour').value);
-    if (val !== '11') throw new Error(`Expected hour 11 (亥), got ${val}`);
+    if (val !== expected) throw new Error(`Expected hour ${expected}, got ${val}`);
   });
 
   // ─── 小限 12 palaces ───
