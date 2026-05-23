@@ -60,7 +60,7 @@ MIT 開源 JavaScript 庫。
 import { astro } from 'iztro';
 
 // 取得命盤 — hour 為時辰索引 (0=早子, 1=丑, ..., 12=夜子)
-const astrolabe = astro.bySolar('1982-11-11', 11, '男', true, 'zh-TW');
+const astrolabe = astro.bySolar('1990-01-01', 6, '男', true, 'zh-TW');
 
 // 計算運限 — hour 為實際 24h 小時
 const horoscope = astrolabe.horoscope('2026-5-23 1:00');
@@ -121,7 +121,7 @@ node tests/ziwei.spec.js
 ```
 
 目前 51 項測試，全部通過。測試範圍：
-- 出生預設值（1982-11-11 亥時）
+- 出生預設值為當天日期 + 當下時辰（首次開啟即顯示當下命盤）
 - 12 宮格渲染、宮名、中心區資訊
 - 性別切換、四柱格式
 - 大限／小限／流年／流月／流日／流時全 12 宮切換
