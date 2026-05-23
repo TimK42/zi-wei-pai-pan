@@ -5,6 +5,31 @@
 ### Cloudflare Pages Deployment
 - Deployed to Cloudflare Pages at `zi-wei-pai-pan.pages.dev`
 
+### Flow Role Color System Redesign
+- Fixed 流年 color (purple #8e44ad) clashing with 化科 (purple #8a4a9a) → changed to blue (#2980b9 light, #5dade2 dark)
+- Fixed 流日/流時 warm tones clashing with 化忌 (red) → 流日 changed to sienna (#a0522d light, #d4875a dark), 流時 changed to red (#c0392b light, #e74c3c dark)
+- Swapped 大限 and 流時 color families (大限 now orange #e67e22→#d35400, 流時 now red #c0392b in light theme)
+- Darkened 大限 light theme color from #e67e22 to #d35400 for contrast on tan background
+- Swapped 流月 and 流日 colors in dark theme (流月 = copper #d4875a, 流日 = teal #48c9b0)
+- Added full dark-theme flow role color overrides (6 periods × 2 themes, all distinct from 四化)
+
+### Star Chart Layout Restructure
+- Split star rendering into left column (主星 + 輔星, vertical stack) and right column (雜星, vertical stack, right-aligned)
+- Each star occupies its own line for clarity
+
+### Prediction Bar Collapse/Expand
+- Added toggle button to collapse/expand target-time section
+- Collapsed: hides date/time inputs and all flow period checkboxes, keeps prev/next buttons visible
+- Settings remain functionally active when collapsed
+- Collapse state persisted in localStorage (`ziwei_pred_collapsed`)
+
+### Documentation Alignment
+- Updated README with star layout, collapse feature, and persistence details
+- Updated CHANGELOG with all recent changes
+- Synced GitHub Release v1.0.0 notes with CHANGELOG content
+
+
+
 ### SEO Optimization
 - Unique titles and meta descriptions (150-160 chars) for all pages
 - Open Graph tags (og:title, og:description, og:type, og:url, og:locale)
