@@ -724,24 +724,86 @@ function runPrediction(force) {
   }
 }
 
+// ─── State Persistence (localStorage) ───
+const STORAGE_KEY = 'ziwei_settings';
+
+function saveState() {
+  const state = {
+    birthDate: document.getElementById('birthDate').value,
+    birthHour: parseInt(document.getElementById('birthHour').value),
+    gender: document.querySelector('input[name="gender"]:checked').value,
+    targetDate: document.getElementById('targetDate').value,
+    targetHour: parseInt(document.getElementById('targetHour').value),
+    toggles: {}
+  };
+  HORO_KEYS.forEach(hk => {
+    state.toggles[hk.id] = document.getElementById(hk.id).checked;
+  });
+  state.toggles.chkZihua = document.getElementById('chkZihua').checked;
+  state.toggles.chkSelfTransform = document.getElementById('chkSelfTransform').checked;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function restoreState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+function setupStatePersistence() {
+  // Auto-save on any form change
+  ['birthDate','birthHour','targetDate','targetHour'].forEach(id => {
+    document.getElementById(id).addEventListener('change', saveState);
+  });
+  document.querySelectorAll('input[name="gender"]').forEach(el => {
+    el.addEventListener('change', saveState);
+  });
+  HORO_KEYS.forEach(hk => {
+    document.getElementById(hk.id).addEventListener('change', saveState);
+  });
+  document.getElementById('chkZihua').addEventListener('change', saveState);
+  document.getElementById('chkSelfTransform').addEventListener('change', saveState);
+}
+
 // ─── Init ───
 document.addEventListener('DOMContentLoaded', function() {
   buildGrid();
   setupToggles();
+  setupStatePersistence();
 
   document.getElementById('calcBtn').addEventListener('click', calculate);
-  document.getElementById('targetDate').addEventListener('change', function() { runPrediction(); });
-  document.getElementById('targetHour').addEventListener('change', function() { runPrediction(false); });
+  document.getElementById('targetDate').addEventListener('change', function() { saveState(); runPrediction(); });
+  document.getElementById('targetHour').addEventListener('change', function() { saveState(); runPrediction(false); });
 
-  const now = new Date();
-  const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-  document.getElementById('birthDate').value = todayStr;
-  document.getElementById('targetDate').value = todayStr;
-  // Snap current hour to 時辰 index (0-12)
-  const h24 = now.getHours();
-  const snapIndex = h24 === 0 ? 0 : h24 === 23 ? 12 : Math.floor((h24 + 1) / 2);
-  document.getElementById('birthHour').value = snapIndex;
-  document.getElementById('targetHour').value = snapIndex;
+  // Try restore saved state first
+  const saved = restoreState();
+  if (saved) {
+    document.getElementById('birthDate').value = saved.birthDate;
+    document.getElementById('birthHour').value = saved.birthHour;
+    document.getElementById('targetDate').value = saved.targetDate;
+    document.getElementById('targetHour').value = saved.targetHour;
+    const genderRadio = document.querySelector('input[name="gender"][value="'+saved.gender+'"]');
+    if (genderRadio) genderRadio.checked = true;
+    // Restore toggles after grid is built
+    HORO_KEYS.forEach(hk => {
+      const cb = document.getElementById(hk.id);
+      if (cb) cb.checked = saved.toggles[hk.id] === true;
+    });
+    document.getElementById('chkZihua').checked = saved.toggles.chkZihua === true;
+    document.getElementById('chkSelfTransform').checked = saved.toggles.chkSelfTransform === true;
+  } else {
+    const now = new Date();
+    const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    document.getElementById('birthDate').value = todayStr;
+    document.getElementById('targetDate').value = todayStr;
+    // Snap current hour to 時辰 index (0-12)
+    const h24 = now.getHours();
+    const snapIndex = h24 === 0 ? 0 : h24 === 23 ? 12 : Math.floor((h24 + 1) / 2);
+    document.getElementById('birthHour').value = snapIndex;
+    document.getElementById('targetHour').value = snapIndex;
+  }
+  // Save initial state so first calculation is persisted
+  saveState();
   calculate();
 });
 
@@ -760,6 +822,7 @@ document.getElementById('prevHourBtn').addEventListener('click', function() {
   } else {
     sel.value = curVal - 1;
   }
+  saveState();
   calculate();
 });
 
@@ -777,6 +840,7 @@ document.getElementById('nextHourBtn').addEventListener('click', function() {
   } else {
     sel.value = curVal + 1;
   }
+  saveState();
   calculate();
 });
 </script>
