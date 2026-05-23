@@ -111,6 +111,10 @@ header p{font-size:.85rem;color:#888}
 .prediction-bar .time-label{font-weight:600;font-size:.85rem;color:#555;white-space:nowrap}
 .prediction-bar .time-input{flex:0 0 auto}
 .prediction-bar .time-input select{font-size:.78rem;padding:2px 6px;border:1px solid #ddd;border-radius:6px}
+.prediction-toggle{font-size:.72rem;padding:2px 6px;color:#888;background:none;border:1px solid #ddd;border-radius:4px;cursor:pointer;line-height:1}
+.prediction-toggle:hover{background:#f2e8d8}
+.prediction-collapsible{display:contents}
+.prediction-bar.collapsed .prediction-collapsible{display:none}
 
 .horo-checkboxes{display:flex;flex-wrap:wrap;gap:4px;margin-left:4px}
 .horo-check{display:none}
@@ -168,6 +172,8 @@ header h1{color:#7aabdf}
 .prediction-bar{border-top-color:#444}
 .prediction-bar .time-label{color:#bbb}
 .prediction-bar .time-input select{border-color:#555}
+.prediction-toggle{border-color:#555;color:#bbb}
+.prediction-toggle:hover{background:#3a3a50}
 .horo-info{color:#bbb}
 .horo-info .horo-label{color:#7aabdf}
 .horo-info .horo-value{color:#d4875a}
@@ -229,7 +235,9 @@ footer a{color:#7aabdf}
     </div>
   </div>
   <div class="prediction-bar">
+  <button class="btn btn-sm prediction-toggle" id="predToggle"><i class="bi bi-chevron-up"></i></button>
   <span class="time-label"><i class="bi bi-clock"></i> 目標時間</span>
+  <div class="prediction-collapsible" id="predCollapsible">
   <span class="time-input">
     <input type="date" id="targetDate" class="form-control form-control-sm" style="width:auto;display:inline-block">
   </span>
@@ -250,6 +258,7 @@ footer a{color:#7aabdf}
       <option value="12">23:00 夜子</option>
     </select>
   </span>
+  </div>
   <button class="btn btn-outline-secondary btn-sm" id="prevHourBtn"><i class="bi bi-chevron-left"></i> 上一個</button>
   <button class="btn btn-outline-secondary btn-sm" id="nextHourBtn">下一個 <i class="bi bi-chevron-right"></i></button>
   <span class="horo-checkboxes">
@@ -804,6 +813,21 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   // Save initial state so first calculation is persisted
   saveState();
+
+  // ─── Prediction bar collapse toggle ───
+  const predBar = document.querySelector('.prediction-bar');
+  const predToggle = document.getElementById('predToggle');
+  const collapseKey = 'ziwei_pred_collapsed';
+  if (localStorage.getItem(collapseKey) === 'true') {
+    predBar.classList.add('collapsed');
+    predToggle.innerHTML = '<i class="bi bi-chevron-down"></i>';
+  }
+  predToggle.addEventListener('click', function() {
+    const isCollapsed = predBar.classList.toggle('collapsed');
+    this.innerHTML = isCollapsed ? '<i class="bi bi-chevron-down"></i>' : '<i class="bi bi-chevron-up"></i>';
+    localStorage.setItem(collapseKey, isCollapsed);
+  });
+
   calculate();
 });
 
