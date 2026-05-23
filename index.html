@@ -70,6 +70,7 @@ header p{font-size:.85rem;color:#888}
 .star .transformed{font-weight:700;font-size:.6rem;display:inline}
 .star .self-transform{color:#b8860b;font-size:.58rem;font-weight:600;margin-left:1px}
 .flow-role{font-size:.55rem;font-weight:600;margin-left:3px;display:none}
+.flow-role .short{display:none}
 .flow-role.show{display:inline}
 .flow-role.flowyear{color:#8e44ad}
 .flow-role.flowmonth{color:#16a085}
@@ -137,6 +138,8 @@ footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
   .star.minor{font-size:.47rem}
   .star.adjunct{font-size:.5em}
   .horo-info{font-size:.55rem}
+  .flow-role .full{display:none}
+  .flow-role .short{display:inline}
   .prediction-bar{flex-direction:column;align-items:stretch}
   .prediction-bar .time-input{flex:1}
 }
@@ -536,6 +539,7 @@ function updateHoroscope(targetDateStr) {
     if (!scope || scope.index === undefined || scope.index < 0) return;
 
     const FLOW_ROLES_CLOCKWISE = ['命宮','父母','福德','田宅','官祿','僕役','遷移','疾厄','財帛','子女','夫妻','兄弟'];
+    const FLOW_ROLES_SHORT = ['命','父','福','田','官','僕','遷','疾','財','子','妻','兄'];
     const startPalace = astrolabe.palaces[scope.index];
     const startBranch = BRANCH_TO_INDEX[startPalace.earthlyBranch];
     if (startBranch === undefined) return;
@@ -570,7 +574,7 @@ function updateHoroscope(targetDateStr) {
         const existing = flowRoles.querySelector('.' + hk.cls);
         const span = existing || document.createElement('span');
         span.className = 'flow-role ' + hk.cls;
-        span.textContent = roleName;
+        span.innerHTML = '<span class="full">' + roleName + '</span><span class="short">' + FLOW_ROLES_SHORT[offset] + '</span>';
         // Toggle visibility based on checkbox
         const cb = document.getElementById(hk.id);
         span.style.display = (cb && cb.checked) ? 'inline' : 'none';
