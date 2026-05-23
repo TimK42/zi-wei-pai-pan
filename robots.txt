@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zi-wei-pai-pan.pages.dev/sitemap.xml
