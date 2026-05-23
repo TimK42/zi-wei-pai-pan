@@ -154,8 +154,9 @@ function startServer() {
     await page.evaluate(() => {
       document.getElementById('targetDate').value = '2026-05-23';
       document.getElementById('targetHour').value = '6';
+      document.getElementById('targetHour').dispatchEvent(new Event('change'));
     });
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(200);
     const text = await page.evaluate(() => {
       const c11 = document.getElementById('center_2_2');
       return c11 ? c11.textContent : '';

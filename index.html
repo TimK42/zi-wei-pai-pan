@@ -378,7 +378,7 @@ function renderChart(a) {
     const hourSel = document.getElementById('targetHour');
     const hourText = hourSel ? hourSel.options[hourSel.selectedIndex]?.text || '' : '';
     const dateStr = dt.replace(/-/g, '/');
-    c11.innerHTML = '<span class="main-info" style="font-size:.82rem">'+ dateStr +'</span>' +
+    c11.innerHTML = '<span class="main-info" style="font-size:.82rem">'+ dateStr +'</span> ' +
       '<span class="year-col" style="font-size:.8rem">'+ hourText +'</span>';
   }
 }
@@ -589,6 +589,15 @@ function runPrediction(force) {
   const branchIdx = parseInt(document.getElementById('targetHour').value);
   const startHour = branchIdx === 0 ? 0 : branchIdx === 12 ? 23 : branchIdx * 2 - 1;
   updateHoroscope(targetDate + ' ' + String(startHour).padStart(2,'0') + ':00');
+  // Also update center_2_2 target time display
+  const c11 = document.getElementById('center_2_2');
+  if (c11) {
+    const hourSel = document.getElementById('targetHour');
+    const hourText = hourSel ? hourSel.options[hourSel.selectedIndex]?.text || '' : '';
+    const dateStr = targetDate.replace(/-/g, '/');
+    c11.innerHTML = '<span class="main-info" style="font-size:.82rem">'+ dateStr +'</span> ' +
+      '<span class="year-col" style="font-size:.8rem">'+ hourText +'</span>';
+  }
   // Re-apply toggle states
   HORO_KEYS.forEach(hk => {
     const cb = document.getElementById(hk.id);
