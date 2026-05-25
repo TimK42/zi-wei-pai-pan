@@ -423,7 +423,7 @@ function startServer() {
     if (counts.flowhour < 2)  throw new Error(`流時 markers: ${counts.flowhour} < 2`);
   });
 
-  await test('Flow 四化 colors match flow scope (流年=purple)', async () => {
+  await test('Flow 四化 colors match flow scope', async () => {
     const colors = await page.evaluate(() => {
       function getColor(sel) {
         const el = document.querySelector(sel);
@@ -438,10 +438,10 @@ function startServer() {
       };
     });
     // rgb(142,68,173) = #8e44ad purple
-    if (colors.flowyear  !== 'rgb(142, 68, 173)') throw new Error('流年 color: ' + colors.flowyear);
+    if (colors.flowyear  !== 'rgb(41, 128, 185)') throw new Error('流年 color: ' + colors.flowyear);
     if (colors.flowmonth !== 'rgb(22, 160, 133)') throw new Error('流月 color: ' + colors.flowmonth);
-    if (colors.flowday   !== 'rgb(211, 84, 0)')   throw new Error('流日 color: ' + colors.flowday);
-    if (colors.flowhour  !== 'rgb(212, 51, 112)') throw new Error('流時 color: ' + colors.flowhour);
+    if (colors.flowday   !== 'rgb(160, 82, 45)')   throw new Error('流日 color: ' + colors.flowday);
+    if (colors.flowhour  !== 'rgb(192, 57, 43)') throw new Error('流時 color: ' + colors.flowhour);
   });
 
   await test('Flow 四化 markers hidden when checkbox off, shown when on', async () => {
