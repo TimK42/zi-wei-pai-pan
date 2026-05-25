@@ -368,7 +368,7 @@ function startServer() {
     if (hasPrefix !== 1) throw new Error(`Expected exactly 1 流年 label (starting palace), got ${hasPrefix}`);
   });
 
-  await test('流年 cells have purple color on .horo-value', async () => {
+  await test('流年 cells have blue color on .horo-value', async () => {
     await page.click('#chkFlowYear + label');
     await page.waitForTimeout(100);
     const color = await page.evaluate(() => {
@@ -378,9 +378,9 @@ function startServer() {
     });
     await page.click('#chkFlowYear + label');
     await page.waitForTimeout(100);
-    // Purple = #8e44ad → rgb(142, 68, 173)
-    if (!color || !color.includes('68, 173') && !color.includes('142')) {
-      throw new Error(`流年 .horo-value color not purple: ${color}`);
+    // Blue = #2980b9 → rgb(41, 128, 185)
+    if (!color || !color.includes("41, 128, 185")) {
+      throw new Error(`流年 .horo-value color not blue: ${color}`);
     }
   });
 
