@@ -673,6 +673,8 @@ function startServer() {
 
   // ─── Major/minor/adjective star styles ───
   await test('Major stars are bold (≥600), minor stars normal', async () => {
+    // Wait for chart to fully render before querying star elements
+    await page.waitForTimeout(500);
     const styles = await page.evaluate(() => {
       const cell = document.querySelector('.palace-cell');
       if (!cell) return null;
