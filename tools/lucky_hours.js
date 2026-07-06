@@ -62,8 +62,10 @@ function checkScope(scope, scopeName, dateStr, timeIndex) {
   if (!scope || scope.index < 0 || !Array.isArray(scope.mutagen)) return null;
 
   // 財帛宮的 physical palace index
-  const wealthPalaceIdx = (scope.index + CAI_BO_OFFSET) % 12;
-  const wealthPalace = master.palaces[wealthPalaceIdx];
+  const wealthPalaceName = scope.palaceNames[(scope.index + CAI_BO_OFFSET) % 12];
+  const wealthPalace = master.palaces.find(p => p.name === wealthPalaceName);
+  if (!wealthPalace) return null;
+
   const wealthStars = wealthPalace.majorStars || [];
 
   // 檢查財帛宮是否有目標星
