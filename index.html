@@ -599,7 +599,15 @@ function updateHoroscope(targetDateStr) {
 
     const FLOW_ROLES_CLOCKWISE = ['命宮','父母','福德','田宅','官祿','僕役','遷移','疾厄','財帛','子女','夫妻','兄弟'];
     const FLOW_ROLES_SHORT = ['命','父','福','田','官','僕','遷','疾','財','子','妻','兄'];
-    const startPalace = astrolabe.palaces[scope.index];
+    
+    // Get start palace name from scope.palaceNames if available, otherwise fallback to scope.index
+    let startPalaceName = '命宮';
+    if (scope.palaceNames && scope.palaceNames[scope.index]) {
+      startPalaceName = scope.palaceNames[scope.index];
+    }
+    const startPalace = astrolabe.palaces.find(p => p.name === startPalaceName);
+    if (!startPalace) return;
+    
     const startBranch = BRANCH_TO_INDEX[startPalace.earthlyBranch];
     if (startBranch === undefined) return;
 
