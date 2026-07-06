@@ -674,23 +674,26 @@ function startServer() {
 
   // ─── Major/minor/adjective star styles ───
   await test('Major stars are bold (≥600), minor stars normal', async () => {
-    const styles = await page.evaluate(() => {
-      const cell = document.querySelector('.palace-cell');
-      if (!cell) return null;
-      const all = cell.querySelectorAll('.star');
-      let majorCount = 0, majorBold = 0;
-      for (const s of all) {
-        if (s.classList.contains('major')) {
-          majorCount++;
+    const result = await page.evaluate(() => {
+      const cells = document.querySelectorAll('.palace-cell');
+      let majorCount = 0, majorBold = 0, minorCount = 0;
+      for (const cell of cells) {
+        const stars = cell.querySelectorAll('.star');
+        for (const s of stars) {
           const fw = parseInt(getComputedStyle(s).fontWeight);
-          if (fw >= 600) majorBold++;
+          if (s.classList.contains('major')) {
+            majorCount++;
+            if (fw >= 600) majorBold++;
+          } else {
+            minorCount++;
+          }
         }
       }
-      return { majorCount, majorBold };
+      return { majorCount, majorBold, minorCount };
     });
-    if (!styles || styles.majorCount === 0) throw new Error('No major stars found');
-    if (styles.majorBold < styles.majorCount) {
-      throw new Error(`${styles.majorBold}/${styles.majorCount} major stars have fw≥600`);
+    if (!result || result.majorCount === 0) throw new Error(`No major stars found (major=${result?.majorCount ?? 'null'}, minor=${result?.minorCount})`);
+    if (result.majorBold < result.majorCount) {
+      throw new Error(`${result.majorBold}/${result.majorCount} major stars have fw≥600`);
     }
   });
 
