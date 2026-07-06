@@ -36,10 +36,9 @@ function startServer() {
   }
 
   console.log('\n🧪 Zi Wei Dou Shu — Playwright Tests\n');
-  await page.goto(`http://127.0.0.1:${PORT}/`, { waitUntil: 'networkidle' });
-  await page.waitForSelector('.palace-cell');
-  // Wait for stars to be rendered (client-side JS takes time)
-  await page.waitForSelector('.star', { timeout: 5000 });
+  await page.goto(`http://127.0.0.1:${PORT}/`, { waitUntil: 'domcontentloaded' });
+  // Wait for the chart to fully render (palace cells + star elements)
+  await page.waitForSelector('.star', { timeout: 10000 });
 
   // ─── Q1: 四化 CSS ───
   await test('四化 祿 has green CSS color (Q1)', async () => {
