@@ -624,8 +624,8 @@ function updateHoroscope(targetDateStr) {
       const infoEl = cell.querySelector('.horo-info.' + hk.cls);
       if (!infoEl) return;
 
-      // For flow month/day/hour, add 1 to the offset
-      const flowOffset = (hk.key === 'monthly' || hk.key === 'daily' || hk.key === 'hourly') ? 1 : 0;
+      // For flow month/day/hour, subtract 1 from the offset
+      const flowOffset = (hk.key === 'monthly' || hk.key === 'daily' || hk.key === 'hourly') ? -1 : 0;
       const offset = (branchIdx - startBranch + 12 + flowOffset) % 12;
       const roleName = FLOW_ROLES_CLOCKWISE[offset];
 
