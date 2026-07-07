@@ -599,12 +599,7 @@ function updateHoroscope(targetDateStr) {
 
     const FLOW_ROLES_CLOCKWISE = ['命宮','父母','福德','田宅','官祿','僕役','遷移','疾厄','財帛','子女','夫妻','兄弟'];
     const FLOW_ROLES_SHORT = ['命','父','福','田','官','僕','遷','疾','財','子','妻','兄'];
-    
-    // Get start palace from scope.palaceNames[scope.index]
-    const startPalaceName = scope.palaceNames && scope.palaceNames[scope.index] ? scope.palaceNames[scope.index] : '命宮';
-    const startPalace = astrolabe.palaces.find(p => p.name === startPalaceName);
-    if (!startPalace) return;
-    
+    const startPalace = astrolabe.palaces[scope.index];
     const startBranch = BRANCH_TO_INDEX[startPalace.earthlyBranch];
     if (startBranch === undefined) return;
 
@@ -629,7 +624,9 @@ function updateHoroscope(targetDateStr) {
       const infoEl = cell.querySelector('.horo-info.' + hk.cls);
       if (!infoEl) return;
 
-      const offset = (branchIdx - startBranch + 12) % 12;
+      // For flow month/day/hour, add 1 to the offset
+      const flowOffset = (hk.key === 'monthly' || hk.key === 'daily' || hk.key === 'hourly') ? 1 : 0;
+      const offset = (branchIdx - startBranch + 12 + flowOffset) % 12;
       const roleName = FLOW_ROLES_CLOCKWISE[offset];
 
       // Set flow role name in header
