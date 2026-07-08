@@ -140,6 +140,8 @@ header p{font-size:.85rem;color:#888}
 
 /* Skip Link */
 .skip-link{position:absolute;top:-40px;left:0;background:#fff;color:#222;padding:8px 12px;font-size:.85rem;z-index:999;text-decoration:none;border-bottom:1px solid #ccc;transition:top .2s}.skip-link:focus{top:0}
+/* Screen-reader only utility */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 /* Footer */
 footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
 
@@ -316,7 +318,8 @@ footer a{color:#7aabdf}
 
   <div class="alert-msg" id="alertMsg"></div>
 
-  <div class="chart-grid" id="chartGrid"></div>
+  <h2 class="sr-only">紫微斗數命盤十二宮位</h2>
+  <div class="chart-grid" id="chartGrid" role="grid" aria-label="紫微斗數命盤，十二宮位圖" aria-rowcount="4" aria-colcount="4" tabindex="0"></div>
 </main>
 </div>
 
@@ -389,6 +392,10 @@ function buildGrid() {
         const cell = document.createElement('div');
         cell.className = 'palace-cell';
         cell.dataset.branch = branchIdx;
+        // ARIA: each palace is a gridcell in the rolegird
+        cell.setAttribute('role', 'gridcell');
+        // aria-label will be set dynamically when data is rendered
+        cell.setAttribute('aria-label', '宮位');
         cell.innerHTML =
           '<div class="palace-header"><span class="palace-name"></span><span class="flow-roles"></span><span class="palace-branch"></span></div>' +
           '<div class="stars-area"></div>' +
@@ -426,6 +433,12 @@ function renderChart(a) {
     // Header
     cell.querySelector('.palace-name').textContent = p.name;
     cell.querySelector('.palace-branch').textContent = p.heavenlyStem + p.earthlyBranch;
+
+    // Build ARIA label for screen readers: palace name + branch + star list
+    const allStars = [...(p.majorStars||[]), ...(p.minorStars||[]), ...(p.adjectiveStars||[])];
+    const starNames = allStars.map(s => s.name + (s.brightness ? ' (' + s.brightness + ')' : '')).join('、');
+    const starText = allStars.length > 0 ? '，星曜：' + starNames : '無主星';
+    cell.setAttribute('aria-label', p.name + '(' + p.heavenlyStem + p.earthlyBranch + ')' + starText);
 
     // Stars
     const sa = cell.querySelector('.stars-area');
