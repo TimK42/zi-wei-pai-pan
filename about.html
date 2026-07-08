@@ -30,6 +30,7 @@ header p{font-size:.85rem;color:#888}
 .content ul{padding-left:20px;margin-bottom:12px}
 .content li{margin-bottom:4px}
 .content a{color:#3a5f95}
+.skip-link{position:absolute;top:-40px;left:0;background:#fff;color:#222;padding:8px 12px;font-size:.85rem;z-index:999;text-decoration:none;border-bottom:1px solid #ccc;transition:top .2s}.skip-link:focus{top:0}
 footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
 footer a{color:#3a5f95}
 @media(prefers-color-scheme:dark){
@@ -44,7 +45,10 @@ footer a{color:#7aabdf}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">跳到主要內容</a>
+
 <div class="container">
+<main id="main-content">
 
 <header>
   <h1>紫微斗數排盤</h1>
@@ -73,11 +77,14 @@ footer a{color:#7aabdf}
 
 </div>
 
-<footer>
-  <a href="index.html">首頁</a> · <a href="about.html">關於</a> · <a href="contact.html">聯絡我們</a> · <a href="privacy-policy.html">隱私權</a>
-</footer>
-
+</main>
 </div>
+
+<footer>
+  <nav aria-label="站內導航">
+    <a href="index.html">首頁</a> · <a href="about.html">關於</a> · <a href="contact.html">聯絡我們</a> · <a href="privacy-policy.html">隱私權</a>
+  </nav>
+</footer>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "75150133442b48178a74a6dab8a98f4f"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
