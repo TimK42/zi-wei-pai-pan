@@ -138,6 +138,8 @@ header p{font-size:.85rem;color:#888}
 .alert-msg{text-align:center;padding:12px;color:#c33;font-size:.85rem;display:none}
 .alert-msg.show{display:block}
 
+/* Skip Link */
+.skip-link{position:absolute;top:-40px;left:0;background:#fff;color:#222;padding:8px 12px;font-size:.85rem;z-index:999;text-decoration:none;border-bottom:1px solid #ccc;transition:top .2s}.skip-link:focus{top:0}
 /* Footer */
 footer{text-align:center;font-size:.72rem;color:#aaa;padding:12px 0}
 
@@ -215,8 +217,10 @@ footer a{color:#7aabdf}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">跳到主要內容</a>
 
 <div class="container">
+<main id="main-content">
 
 <header>
   <h1><i class="bi bi-moon-stars"></i> 紫微斗數排盤</h1>
@@ -314,14 +318,15 @@ footer a{color:#7aabdf}
 <div class="alert-msg" id="alertMsg"></div>
 
 <div class="chart-grid" id="chartGrid"></div>
+</main>
 
+<nav aria-label="Site navigation">
 <footer>
   <a href="about.html">關於</a> ·
   <a href="contact.html">聯絡我們</a> ·
   <a href="privacy-policy.html">隱私權</a>
 </footer>
-
-</div>
+</nav>
 
 <script>
 // ─── Constants ───
