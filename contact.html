@@ -44,6 +44,16 @@ header h1{color:#7aabdf}
 footer{color:#666}
 footer a{color:#7aabdf}
 }
+
+/* Accessibility: focus indicators */
+*:focus-visible{outline:2px solid #8B7355;outline-offset:2px}
+*:focus{outline:none}
+*:focus:not(:focus-visible){outline:none;outline-offset:0}
+a:focus-visible{border-radius:2px}
+button:focus-visible,.prediction-toggle:focus-visible{outline-offset:4px}
+
+/* Accessibility: respect reduced motion preference */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
 </style>
 </head>
 <body>
