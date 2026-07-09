@@ -20,8 +20,13 @@ const PAGES = ['index.html', 'about.html', 'contact.html', 'privacy-policy.html'
   // Serve all HTML pages
   const serverPromise = new Promise(resolve => {
     const srv = createServer((req, res) => {
-      const path = req.url === '/' ? '/index.html' : req.url;
-      const fullPath = join(__dirname, '..', path.replace(/^\//, ''));
+      let p = req.url.split('?')[0]; // strip query string
+      if (p.startsWith('/')) p = p.slice(1);
+      if (!/^\w[\w.-]*(\.html|\.png)$/.test(p)) {
+        res.writeHead(403, { 'Content-Type': 'text/plain' });
+        return res.end('Forbidden');
+      }
+      const fullPath = join(__dirname, '..', p);
       try {
         const html = readFileSync(fullPath, 'utf-8');
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
