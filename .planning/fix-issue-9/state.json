@@ -1,16 +1,16 @@
 {
-  "current_step": 5,
-  "last_action": "push-done",
-  "head_sha": "0d35f69",
+  "current_step": 8,
+  "last_action": "merged",
+  "head_sha": "946ccc9",
   "pr_number": 16,
   "branch_name": "fix-9-single-agent",
   "issues_addressed": ["9"],
-  "pending_action": "ci-copilot-monitor",
+  "pending_action": null,
   "ci_poll_count": 0,
   "copilot_clean_count": 0,
   "cycle_count": 0,
-  "post_push_cycle_count": 0,
-  "copilot_review_state": "pending",
+  "post_push_cycle_count": 1,
+  "copilot_review_state": "resolved",
   "fix_group_count": 1,
   "current_fix_group": 0
 }
