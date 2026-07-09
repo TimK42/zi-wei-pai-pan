@@ -1,0 +1,19 @@
+{
+  "current_step": 2,
+  "last_action": "fix-complete",
+  "ci_poll_count": 0,
+  "copilot_clean_count": 0,
+  "cycle_count": 0,
+  "post_push_cycle_count": 0,
+  "head_sha": "327db2c",
+  "pr_number": null,
+  "branch_name": "fix-8-single-agent",
+  "issues_addressed": ["8"],
+  "pending_action": null,
+  "copilot_review_state": "pending",
+  "latest_copilot_commit_id": null,
+  "fix_group_count": 1,
+  "current_fix_group": 0,
+  "ci_done": false,
+  "copilot_done": false
+}
