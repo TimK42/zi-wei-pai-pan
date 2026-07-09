@@ -1,26 +1,13 @@
 const { chromium } = require('playwright');
 const { createServer } = require('http');
 const { readFileSync } = require('fs');
-const { join, basename } = require('path');
+const { join } = require('path');
 
 const PORT = 18766;
 const PAGES = ['index.html', 'about.html', 'contact.html', 'privacy-policy.html', '404.html'];
-const REQUIRED_META = [
-  { name: 'theme-color', content: '#D9D2BC' },
-  { name: 'apple-mobile-web-app-capable', content: 'yes' },
-  { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-];
 
-async function test(name, fn) {
-  try {
-    await fn();
-    console.log(`  ✅ ${name}`);
-    return true;
-  } catch (e) {
-    console.log(`  ❌ ${name}: ${e.message}`);
-    return false;
-  }
-}
+
+
 
 (async () => {
   let passed = 0, failed = 0;
@@ -34,7 +21,7 @@ async function test(name, fn) {
   const serverPromise = new Promise(resolve => {
     const srv = createServer((req, res) => {
       const path = req.url === '/' ? '/index.html' : req.url;
-      const fullPath = join(__dirname, '..', path);
+      const fullPath = join(__dirname, '..', path.replace(/^\//, ''));
       try {
         const html = readFileSync(fullPath, 'utf-8');
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
