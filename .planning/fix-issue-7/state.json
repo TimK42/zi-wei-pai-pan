@@ -1,6 +1,6 @@
 {
-  "current_step": 7,
-  "last_action": "pr-ready",
+  "current_step": 8,
+  "last_action": "report",
   "ci_poll_count": 60,
   "copilot_clean_count": 3,
   "cycle_count": 0,
@@ -9,11 +9,13 @@
   "pr_number": 14,
   "branch_name": "fix-7-single-agent",
   "issues_addressed": ["7"],
-  "pending_action": "waiting_for_merge_approval",
+  "pending_action": null,
   "copilot_review_state": "COMMENTED",
   "latest_copilot_commit_id": "2cf1335f1c2f2095d0ad39a1dca4d59ade96d73e",
   "fix_group_count": 1,
   "current_fix_group": 0,
   "ci_done": true,
-  "copilot_done": true
+  "copilot_done": true,
+  "merged": true,
+  "merge_sha": "347c45a"
 }
