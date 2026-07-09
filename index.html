@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<title>紫微斗數排盤 | 紫微斗數排盤</title>
+<title>紫微斗數排盤</title>
 <meta name="description" content="免費線上紫微斗數排盤，純前端離線運算。少數支援流時推運的排盤工具，同時顯示四化星與自化星，快速精準查詢流年流月流日流時命盤變化。">
 <meta property="og:title" content="紫微斗數排盤 - 支援流時＋四化星顯示">
 <meta property="og:description" content="少數支援流時推運的免費紫微斗數排盤，同時顯示四化星與自化星，純前端離線運算。">
@@ -768,7 +768,7 @@ function setupToggles() {
 function calculate() {
   const btn = document.getElementById('calcBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>排盤中…';
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span>排盤中…</span>';
   const gender = document.querySelector('input[name="gender"]:checked').value;
   const birthDate = document.getElementById('birthDate').value;
   const birthHour = parseInt(document.getElementById('birthHour').value);
@@ -786,6 +786,7 @@ function calculate() {
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-calculator"></i> 排盤';
+    btn.setAttribute('aria-label', '排盤');
   }
 }
 
