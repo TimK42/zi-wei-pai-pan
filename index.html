@@ -271,7 +271,7 @@ footer a{color:#7aabdf}
     </div>
   </div>
   <div class="prediction-bar">
-  <button class="btn btn-sm prediction-toggle" id="predToggle" aria-label="收起預測面板" aria-expanded="true" aria-controls="predictionPanel"><i class="bi bi-chevron-up"></i></button>
+  <button class="btn btn-sm prediction-toggle" id="predToggle" aria-label="收起預測面板" aria-expanded="true" aria-controls="predCollapsible"><i class="bi bi-chevron-up"></i></button>
   <span class="time-label"><i class="bi bi-clock"></i> 目標時間</span>
   <div class="prediction-collapsible" id="predCollapsible">
   <span class="time-input">
@@ -890,10 +890,14 @@ document.addEventListener('DOMContentLoaded', function() {
   if (localStorage.getItem(collapseKey) === 'true') {
     predBar.classList.add('collapsed');
     predToggle.innerHTML = '<i class="bi bi-chevron-down"></i>';
+    predToggle.setAttribute('aria-expanded', 'false');
+    predToggle.setAttribute('aria-label', '展開預測面板');
   }
   predToggle.addEventListener('click', function() {
     const isCollapsed = predBar.classList.toggle('collapsed');
     this.innerHTML = isCollapsed ? '<i class="bi bi-chevron-down"></i>' : '<i class="bi bi-chevron-up"></i>';
+    this.setAttribute('aria-expanded', String(!isCollapsed));
+    this.setAttribute('aria-label', isCollapsed ? '展開預測面板' : '收起預測面板');
     localStorage.setItem(collapseKey, isCollapsed);
   });
 
