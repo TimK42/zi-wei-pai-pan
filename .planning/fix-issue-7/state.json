@@ -1,11 +1,11 @@
 {
-  "current_step": 1,
-  "last_action": "init-complete",
+  "current_step": 6,
+  "last_action": "pushed",
   "ci_poll_count": 0,
   "copilot_clean_count": 0,
   "cycle_count": 0,
   "post_push_cycle_count": 0,
-  "head_sha": "88e7b92",
+  "head_sha": "e93a4f8",
   "pr_number": 14,
   "branch_name": "fix-7-single-agent",
   "issues_addressed": ["7"],
@@ -13,5 +13,7 @@
   "copilot_review_state": "pending",
   "latest_copilot_commit_id": null,
   "fix_group_count": 1,
-  "current_fix_group": 0
+  "current_fix_group": 0,
+  "ci_done": false,
+  "copilot_done": false
 }
