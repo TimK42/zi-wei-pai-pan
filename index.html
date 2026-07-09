@@ -204,6 +204,7 @@ header h1{color:#7aabdf}
 .horo-info.flowday .horo-label,.horo-info.flowday .horo-value{color:#48c9b0}
 .horo-info.flowhour .horo-label,.horo-info.flowhour .horo-value{color:#e74c3c}
 #chkDaxian:checked+.horo-label-btn{background:#f39c12;color:#fff;border-color:#d68910}
+#calcBtn,#prevHourBtn,#nextHourBtn{min-height:44px}
 #chkXiaoxian:checked+.horo-label-btn{background:#2ecc71;color:#fff;border-color:#27ae60}
 #chkFlowYear:checked+.horo-label-btn{background:#5dade2;color:#fff;border-color:#3498db}
 #chkFlowMonth:checked+.horo-label-btn{background:#d4875a;color:#fff;border-color:#a0522d}
@@ -270,7 +271,7 @@ footer a{color:#7aabdf}
     </div>
   </div>
   <div class="prediction-bar">
-  <button class="btn btn-sm prediction-toggle" id="predToggle" aria-label="收起預測面板"><i class="bi bi-chevron-up"></i></button>
+  <button class="btn btn-sm prediction-toggle" id="predToggle" aria-label="收起預測面板" aria-expanded="true" aria-controls="predictionPanel"><i class="bi bi-chevron-up"></i></button>
   <span class="time-label"><i class="bi bi-clock"></i> 目標時間</span>
   <div class="prediction-collapsible" id="predCollapsible">
   <span class="time-input">
