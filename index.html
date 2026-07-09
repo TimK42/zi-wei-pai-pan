@@ -117,15 +117,16 @@ header p{font-size:.85rem;color:#888}
 .prediction-bar .time-label{font-weight:600;font-size:.85rem;color:#555;white-space:nowrap}
 .prediction-bar .time-input{flex:0 0 auto}
 .prediction-bar .time-input select{font-size:.78rem;padding:2px 6px;border:1px solid #ddd;border-radius:6px}
-.prediction-toggle{font-size:.72rem;padding:2px 6px;color:#888;background:none;border:1px solid #ddd;border-radius:4px;cursor:pointer;line-height:1}
+.prediction-toggle{font-size:.72rem;padding:8px 12px;color:#888;background:none;border:1px solid #ddd;border-radius:4px;cursor:pointer;line-height:1;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
 .prediction-toggle:hover{background:#f2e8d8}
-.prediction-collapsible{display:contents}
+.prediction-collapsible{display:flex;flex-wrap:wrap;gap:8px}
 .prediction-bar.collapsed .prediction-collapsible{display:none}
 
 .horo-checkboxes{display:flex;flex-wrap:wrap;gap:4px;margin-left:4px}
 .horo-check{display:none}
-.horo-label-btn{display:inline-block;padding:4px 10px;font-size:.78rem;border:1px solid #d0c8bc;border-radius:16px;background:#f2e8d8;color:#666;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap}
+.horo-label-btn{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;font-size:.78rem;border:1px solid #d0c8bc;border-radius:16px;background:#f2e8d8;color:#666;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap;min-width:44px;min-height:44px}
 .horo-label-btn:hover{background:#e8dcc8;border-color:#b8a89a}
+#calcBtn,#prevHourBtn,#nextHourBtn{min-height:44px;min-width:44px}
 #chkDaxian:checked+.horo-label-btn{background:#d35400;color:#fff;border-color:#ba4a00}
 #chkXiaoxian:checked+.horo-label-btn{background:#27ae60;color:#fff;border-color:#1e8449}
 #chkFlowYear:checked+.horo-label-btn{background:#2980b9;color:#fff;border-color:#2471a3}
@@ -270,7 +271,7 @@ footer a{color:#7aabdf}
     </div>
   </div>
   <div class="prediction-bar">
-  <button class="btn btn-sm prediction-toggle" id="predToggle"><i class="bi bi-chevron-up"></i></button>
+  <button class="btn btn-sm prediction-toggle" id="predToggle" aria-label="收起預測面板" aria-expanded="true" aria-controls="predCollapsible"><i class="bi bi-chevron-up"></i></button>
   <span class="time-label"><i class="bi bi-clock"></i> 目標時間</span>
   <div class="prediction-collapsible" id="predCollapsible">
   <span class="time-input">
@@ -312,8 +313,8 @@ footer a{color:#7aabdf}
     <label class="horo-label-btn" for="chkSelfTransform">自化</label>
   </span>
   </div>
-  <button class="btn btn-outline-secondary btn-sm" id="prevHourBtn"><i class="bi bi-chevron-left"></i> 上一個</button>
-  <button class="btn btn-outline-secondary btn-sm" id="nextHourBtn">下一個 <i class="bi bi-chevron-right"></i></button>
+  <button class="btn btn-outline-secondary btn-sm" id="prevHourBtn" aria-label="上一個宮位"><i class="bi bi-chevron-left"></i> 上一個</button>
+  <button class="btn btn-outline-secondary btn-sm" id="nextHourBtn" aria-label="下一個宮位">下一個 <i class="bi bi-chevron-right"></i></button>
 </div>
 
   <div class="alert-msg" id="alertMsg"></div>
@@ -889,10 +890,14 @@ document.addEventListener('DOMContentLoaded', function() {
   if (localStorage.getItem(collapseKey) === 'true') {
     predBar.classList.add('collapsed');
     predToggle.innerHTML = '<i class="bi bi-chevron-down"></i>';
+    predToggle.setAttribute('aria-expanded', 'false');
+    predToggle.setAttribute('aria-label', '展開預測面板');
   }
   predToggle.addEventListener('click', function() {
     const isCollapsed = predBar.classList.toggle('collapsed');
     this.innerHTML = isCollapsed ? '<i class="bi bi-chevron-down"></i>' : '<i class="bi bi-chevron-up"></i>';
+    this.setAttribute('aria-expanded', String(!isCollapsed));
+    this.setAttribute('aria-label', isCollapsed ? '展開預測面板' : '收起預測面板');
     localStorage.setItem(collapseKey, isCollapsed);
   });
 
