@@ -1,0 +1,16 @@
+{
+  "current_step": 8,
+  "last_action": "merged-and-closed",
+  "ci_poll_count": 5,
+  "copilot_clean_count": 1,
+  "cycle_count": 0,
+  "head_sha": "c5b5b54",
+  "pr_number": 13,
+  "branch_name": "fix-6-single-agent",
+  "issues_addressed": ["6"],
+  "pending_action": null,
+  "ci_done": true,
+  "copilot_done": true,
+  "merged": true,
+  "post_push_cycle_count": 0
+}
