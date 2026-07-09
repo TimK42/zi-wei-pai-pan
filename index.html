@@ -769,6 +769,7 @@ function calculate() {
   const btn = document.getElementById('calcBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span>排盤中…</span>';
+  btn.removeAttribute('aria-label');
   const gender = document.querySelector('input[name="gender"]:checked').value;
   const birthDate = document.getElementById('birthDate').value;
   const birthHour = parseInt(document.getElementById('birthHour').value);
@@ -786,7 +787,6 @@ function calculate() {
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-calculator"></i> 排盤';
-    btn.setAttribute('aria-label', '排盤');
   }
 }
 
