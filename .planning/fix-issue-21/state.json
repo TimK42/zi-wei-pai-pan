@@ -1,0 +1,16 @@
+{
+  "current_step": 5,
+  "last_action": "pushed",
+  "issues_addressed": ["21"],
+  "head_sha": "cedc693851eb47ef18f10d71232f1234cf81048e",
+  "pr_number": 25,
+  "branch_name": "fix-21-single-agent",
+  "pre_push_cycle_count": 0,
+  "post_push_cycle_count": 0,
+  "ci_poll_count": 0,
+  "ci_done": false,
+  "copilot_done": false,
+  "copilot_clean_count": 0,
+  "pending_action": "ci-copilot-loop",
+  "copilot_review_state": "pending"
+}

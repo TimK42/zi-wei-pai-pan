@@ -1,20 +1,23 @@
 # 紫微斗數排盤 UI/UX Audit Report
 
-> Conducted: 2026-07-08 via browser-based inspection (375×812 mobile viewport)
+> **📅 Last updated: 2026-07-10** — findings marked ✅ Resolved have been addressed in subsequent PRs.
+> Original report conducted: 2026-07-08 via browser-based inspection (375×812 mobile viewport)
 > Pages audited: 5 pages (index, about, contact, privacy-policy, 404)
 > Framework: Vanilla HTML/CSS/JS (single-page app in index.html)
+>
+> See [CHANGELOG.md](../CHANGELOG.md) for the full fix history.
 
 ---
 
 ## 📊 Summary
 
-| Severity | Count |
-|----------|-------|
-| 🔴 Critical | 3 |
-| 🟧 High | 5 |
-| 🟨 Medium | 8 |
-| 🟩 Low | 6 |
-| **Total** | **22** |
+| Severity | Count | Resolved |
+|----------|-------|----------|
+| 🔴 Critical | 3 | 3 ✅ |
+| 🟧 High | 5 | 5 ✅ |
+| 🟨 Medium | 8 | 4 ✅ |
+| 🟩 Low | 6 | 4 ✅ |
+| **Total** | **22** | **16 ✅** |
 
 ---
 
@@ -36,88 +39,73 @@
 
 ## 🔴 Critical Issues
 
-### C1. 404 Page Returns Full Chart Page
+### ~~C1. 404 Page Returns Full Chart Page~~ ✅ Resolved
 **Severity:** Critical
-**Pages affected:** All (via GitHub Pages SPA 404 fallback)
-**Evidence:** Visiting `/nonexistent-page-for-404-test` returns the full 紫微斗數排盤 chart form (same as index.html), not a proper 404 page.
-**Impact:** Users hitting a wrong URL get confused — they see a completely filled-in chart with no indication of an error.
-**Fix:** Create `404.html` with a custom message, link back to the chart tool, and configure GitHub Pages to serve it.
+**Pages affected:** All
+**Resolved in:** PR #14 (2026-07-09)
+**Fix:** Custom `404.html` created with error message, back link, and About/Contact links.
 
-### C2. No `<main>` Landmark on Any Page
+### ~~C2. No `<main>` Landmark on Any Page~~ ✅ Resolved
 **Severity:** Critical
-**Pages affected:** All (index, about, contact, privacy-policy)
-**Evidence:** No `<main id="main-content">` found on any page. Skip-to-content link also missing.
-**Impact:** Screen reader users have no semantic landmark to jump directly to page content. Violates WCAG 1.3.1 (Info and Relationships) and 2.4.1 (Bypass Blocks).
-**Fix:** Wrap the primary content of each page in `<main id="main-content">` and add a skip-to-content link as the first focusable element.
+**Pages affected:** All
+**Resolved in:** PR #12 (2026-07-08)
+**Fix:** `<main id="main-content">` added to all pages with skip-to-content link (`<a href="#main-content" class="skip-link">跳到主要內容</a>`).
 
-### C3. Chart Palaces Are Not Accessible to Screen Readers
+### ~~C3. Chart Palaces Are Not Accessible to Screen Readers~~ ✅ Resolved
 **Severity:** Critical
 **Pages affected:** index.html (chart view)
-**Evidence:** The 12 palaces (命宮, 兄弟, 夫妻, etc.) and their stars (紫微, 武曲, 破軍...) render as plain text with no semantic structure. No `<table>`, no ARIA roles, no labels.
-**Impact:** Screen reader users hear a wall of palace/star names with no context — they cannot distinguish which stars belong to which palace, nor understand the chart structure.
-**Fix:** Re-render the 12-palace grid as a `<table>` with proper `scope="col"`/`scope="row"`, or use ARIA grid layout (`role="grid"` with `aria-rowcount="12"`, `aria-colcount`). Each palace should be a `<th>` with its stars as data cells.
+**Resolved in:** PR #13 (2026-07-09)
+**Fix:** Chart grid now uses `role="grid"` with `aria-label`, `aria-rowcount="4"`, `aria-colcount="4"`. Each palace cell has a dynamic `aria-label` set at render time.
 
 ---
 
 ## 🟧 High Issues
 
-### H1. Icon Buttons Lack `aria-label`
+### ~~H1. Icon Buttons Lack `aria-label`~~ ✅ Resolved
 **Severity:** High
-**Pages affected:** index.html (排盤 button, icon buttons like ⏺, ⏴, ⏵)
-**Evidence:** `document.querySelectorAll('button[aria-label]').length` returns 0. The "排盤" button has text, but icon-only buttons (toggle 大限/小限/etc., prev/next) have no accessible name.
-**Impact:** Screen reader users hear button as "button" with no hint of its function. Touch target icons (previous/next) are especially problematic.
-**Fix:** Add `aria-label` to all icon buttons: e.g., `aria-label="上一個宮位"`, `aria-label="切換大限"`.
+**Pages affected:** index.html
+**Resolved in:** PR #15 (2026-07-09)
+**Fix:** `aria-label` added to all icon-only buttons: prediction toggle, prev/next navigation, and dynamic ARIA labels on palace cells.
 
-### H2. Touch Targets Below 44px on All Pages
-**Severity:** High
-**Pages affected:** All pages (index: 3 small, about: 4 small, contact: 3 small, privacy: 3 small)
-**Evidence:** `document.querySelectorAll('button,a[href]')` filtered by `getBoundingClientRect()` shows 3–4 buttons per page below the 44×44px WCAG target size.
-**Impact:** Users with motor impairments or large fingers cannot reliably tap these controls on mobile.
-**Fix:** Increase button padding to ensure minimum 44×44px touch targets. CSS: `min-width: 44px; min-height: 44px; padding: 8px 12px;`.
-
-### H3. No Skip-to-Content Link
+### ~~H2. Touch Targets Below 44px on All Pages~~ ✅ Resolved
 **Severity:** High
 **Pages affected:** All pages
-**Evidence:** No `<a href="#main-content">` or `[aria-label="Skip to content"]` found.
-**Impact:** Keyboard/screen reader users must tab through every element (all 12 palaces + stars) to reach navigation or forms.
-**Fix:** Add a hidden-but-focusable skip link as the first element: `<a href="#main-content" class="skip-link">跳到主要內容</a>`. Style: `position:absolute; top:-40px; left:0; background:#fff; color:#000; padding:8px; z-index:999;` and `:focus { top:0; }`.
+**Resolved in:** PR #15 (2026-07-09)
+**Fix:** All interactive buttons now have `min-width: 44px; min-height: 44px` plus adequate padding.
 
-### H4. No `<nav>` Landmark
+### ~~H3. No Skip-to-Content Link~~ ✅ Resolved
 **Severity:** High
-**Pages affected:** All pages (confirmed: `hasNav = false`)
-**Evidence:** No `<nav>` element found. Footer navigation links exist but are not inside a `<nav>`.
-**Impact:** Screen reader users cannot jump to navigation regions. Violates WCAG 1.3.1.
-**Fix:** Wrap footer (and optionally header) links in `<nav aria-label="Site navigation">`.
+**Pages affected:** All pages
+**Resolved in:** PR #12 (2026-07-08, same fix as C2)
+**Fix:** Skip link `<a href="#main-content" class="skip-link">跳到主要內容</a>` added as the first focusable element on all pages.
 
-### H5. No Custom 404 — Users Lost on Wrong URLs
+### ~~H4. No `<nav>` Landmark~~ ✅ Resolved
+**Severity:** High
+**Pages affected:** All pages
+**Resolved in:** PR #12 (2026-07-08)
+**Fix:** Footer navigation links wrapped in `<nav aria-label="站內導航">` on all pages.
+
+### ~~H5. No Custom 404 — Users Lost on Wrong URLs~~ ✅ Resolved
 **Severity:** High
 **Pages affected:** All unknown URLs
-**Evidence:** GitHub Pages SPA fallback serves the full chart page for any non-existent path. The title changes to "紫微斗數排盤 – 少數支援流時＋四化的免費排盤工具" (different from index), but the content is identical to index.html.
-**Impact:** Users arriving from a bookmarked link or search engine on a wrong URL see a pre-filled chart and don't know what happened. No error message, no back navigation.
-**Fix:** Create `404.html` with: "頁面找不到" message, link back to the main tool, and a link to 關於/聯絡我們.
+**Resolved in:** PR #14 (2026-07-09, same fix as C1)
+**Fix:** Custom `404.html` created with 頁面找不到 message, back link, and footer navigation.
 
 ---
 
 ## 🟨 Medium Issues
 
-### M1. No `<meta name="theme-color">`
+### ~~M1. No `<meta name="theme-color">`~~ ✅ Resolved
 **Severity:** Medium
 **Pages affected:** All pages
-**Evidence:** `hasThemeColor = false` on all pages.
-**Impact:** Mobile browsers show default browser chrome color (often white or system blue) which may clash with the site's warm beige background.
-**Fix:** Add `<meta name="theme-color" content="#D9D2BC">` (matching `rgb(221, 210, 188)`).
+**Resolved in:** PR #16 (2026-07-09)
+**Fix:** `<meta name="theme-color" content="#D9D2BC">` added to all pages.
 
-### M2. No Apple Web App Meta Tags
+### ~~M2. No Apple Web App Meta Tags~~ ✅ Resolved
 **Severity:** Medium
 **Pages affected:** All pages
-**Evidence:** `apple-mobile-web-app-capable` and `apple-mobile-web-app-status-bar-style` missing.
-**Impact:** Adding to home screen on iOS does not hide browser chrome or set status bar style.
-**Fix:** Add:
-```html
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="/icon-192.png">
-```
+**Resolved in:** PR #16 (2026-07-09)
+**Fix:** Apple web app meta tags (`apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `apple-touch-icon`) added to all pages.
 
 ### M3. Chart Data Has No Semantic Structure (WCAG 1.3.1)
 **Severity:** Medium
@@ -146,18 +134,17 @@
 **Evidence:** `sitemap.xml` exists, but no robots.txt check for SPA considerations. GitHub Pages serves all HTML files; if index.html loads all content dynamically, crawlers may not see chart data.
 **Fix:** Verify that Google can crawl and render the SPA (Googlebot uses headless Chrome, so JS rendering should work).
 
-### M7. No Focus Indicators Visible (Keyboard Navigation)
+### ~~M7. No Focus Indicators Visible (Keyboard Navigation)~~ ✅ Resolved
 **Severity:** Medium
 **Pages affected:** All pages
-**Evidence:** No `:focus-visible` styles observed on buttons or links.
-**Impact:** Keyboard users cannot see which element is currently focused.
-**Fix:** Add global focus styles: `*:focus-visible { outline: 2px solid #8B7355; outline-offset: 2px; }`.
+**Resolved in:** PR #17 (2026-07-09), reinforced in PR #24 (`css/accessibility.css`)
+**Fix:** Global `:focus-visible` styles with 2px solid #8B7355 outline added via `css/accessibility.css`.
 
-### M8. No `prefers-reduced-motion` Handling
+### ~~M8. No `prefers-reduced-motion` Handling~~ ✅ Resolved
 **Severity:** Medium
-**Pages affected:** index.html (if any transitions exist)
-**Impact:** Users with vestibular disorders may experience discomfort from animations.
-**Fix:** Add `@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }`.
+**Pages affected:** All pages (via shared css/accessibility.css)
+**Resolved in:** PR #17 (2026-07-09), reinforced in PR #24 (`css/accessibility.css`)
+**Fix:** `@media (prefers-reduced-motion: reduce)` media query added to `css/accessibility.css`.
 
 ---
 
@@ -173,39 +160,30 @@
 **Pages affected:** All pages (server-level)
 **Evidence:** Should be configured at GitHub Pages level.
 
-### L3. Page Title Format Inconsistent
+### ~~L3. Page Title Format Inconsistent~~ ✅ Resolved
 **Severity:** Low
-**Evidence:** 
-- index.html: "紫微斗數排盤" (no suffix)
-- about.html: "關於 – 紫微斗數排盤 | 免費線上算命工具"
-- contact.html: "聯絡我們 – 紫微斗數排盤 | 免費線上算命工具"
-- privacy-policy.html: "隱私權政策 – 紫微斗數排盤 | 免費線上算命工具"
-- 404 fallback: "紫微斗數排盤 – 少數支援流時＋四化的免費排盤工具"
-**Fix:** Standardize title format: `[Page Name] | 紫微斗數排盤`.
+**Resolved in:** PR #22 (2026-07-10)
+**Fix:** All 5 pages standardized to `[Page Name] | 紫微斗數排盤` format.
+- index: `首頁 | 紫微斗數排盤`
+- about: `關於 | 紫微斗數排盤`
+- contact: `聯絡我們 | 紫微斗數排盤`
+- privacy: `隱私權政策 | 紫微斗數排盤`
+- 404: `頁面找不到 | 紫微斗數排盤`
 
-### L4. No Open Graph Image
+### ~~L4. No Open Graph Image~~ ✅ Resolved
 **Severity:** Low
-**Evidence:** OG tags present (`og:url`) but no `og:image` found.
-**Fix:** Add `<meta property="og:image" content="/share-preview.png">` with a representative chart image.
+**Resolved in:** PR #22 (2026-07-10)
+**Fix:** `<meta property="og:image" content="/icon-192.png">` added to all 5 pages.
 
-### L5. No Schema.org Structured Data
+### ~~L5. No Schema.org Structured Data~~ ✅ Resolved
 **Severity:** Low
-**Evidence:** No JSON-LD or microdata on any page.
-**Fix:** Add `WebApplication` structured data:
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "紫微斗數排盤",
-  "applicationCategory": "UtilityApplication",
-  "operatingSystem": "Web Browser"
-}
-```
+**Resolved in:** PR #22 (2026-07-10)
+**Fix:** `WebApplication` JSON-LD structured data added to all 5 pages with name, description, author, and pricing info.
 
-### L6. No Loading State for Chart Generation
+### ~~L6. No Loading State for Chart Generation~~ ✅ Resolved
 **Severity:** Low
-**Evidence:** When clicking "排盤", the chart generates instantly (no loading indicator), but if it takes longer (slow device), users may think the button didn't work.
-**Fix:** Show a brief loading spinner on the "排盤" button during calculation.
+**Resolved in:** PR #22 (2026-07-10)
+**Fix:** Loading spinner (Bootstrap `.spinner-border`) with `aria-hidden="true"` displayed on 排盤 button during calculation, disabled state with restoration in `finally` block.
 
 ---
 
