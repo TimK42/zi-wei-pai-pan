@@ -30,6 +30,7 @@
 }
 </script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/css/accessibility.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{background:#ddd2bc;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif;padding:16px;min-height:100vh}
@@ -57,15 +58,7 @@ footer{color:#666}
 footer a{color:#7aabdf}
 }
 
-/* Accessibility: focus indicators */
-*:focus-visible{outline:2px solid #8B7355;outline-offset:2px}
-*:focus{outline:none}
-*:focus:not(:focus-visible){outline:none;outline-offset:0}
-a:focus-visible{border-radius:2px}
-button:focus-visible,.prediction-toggle:focus-visible{outline-offset:4px}
 
-/* Accessibility: respect reduced motion preference */
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
 </style>
 </head>
 <body>
