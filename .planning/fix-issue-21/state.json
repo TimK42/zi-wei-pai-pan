@@ -1,0 +1,15 @@
+{
+  "current_step": 1,
+  "last_action": "branch-created",
+  "issues_addressed": ["21"],
+  "fix_group_count": 1,
+  "current_fix_group": 0,
+  "head_sha": "",
+  "pr_number": null,
+  "branch_name": "fix-21-single-agent",
+  "pre_push_cycle_count": 0,
+  "post_push_cycle_count": 0,
+  "ci_done": false,
+  "copilot_done": false,
+  "pending_action": null
+}
