@@ -1,0 +1,14 @@
+{
+  "current_step": 2,
+  "last_action": "all-groups-fixed",
+  "ci_poll_count": 0,
+  "copilot_clean_count": 0,
+  "cycle_count": 0,
+  "head_sha": "daa55f6",
+  "pr_number": null,
+  "branch_name": "fix-20-single-agent",
+  "issues_addressed": ["20"],
+  "pending_action": null,
+  "current_fix_group": 1,
+  "fix_group_count": 1
+}
