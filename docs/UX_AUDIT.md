@@ -142,7 +142,7 @@
 
 ### ~~M8. No `prefers-reduced-motion` Handling~~ ✅ Resolved
 **Severity:** Medium
-**Pages affected:** index.html
+**Pages affected:** All pages (via shared css/accessibility.css)
 **Resolved in:** PR #17 (2026-07-09), reinforced in PR #24 (`css/accessibility.css`)
 **Fix:** `@media (prefers-reduced-motion: reduce)` media query added to `css/accessibility.css`.
 
